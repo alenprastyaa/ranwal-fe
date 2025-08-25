@@ -132,7 +132,7 @@ import axios from 'axios'
 import Swal from 'sweetalert2'
 
 const token = localStorage.getItem('token')
-const baseUrl = 'http://localhost:5002'
+const baseUrl = 'https://bitwisi.cloud/ranwal'
 
 // Form data
 const selectedActivityId = ref('')

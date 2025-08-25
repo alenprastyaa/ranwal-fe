@@ -569,7 +569,7 @@ const message = reactive({
 })
 
 // API Base URL
-const API_BASE_URL = 'http://localhost:5002/api'
+const API_BASE_URL = 'https://bitwisi.cloud/ranwal/api'
 
 // Debounce timer
 let searchTimer = null

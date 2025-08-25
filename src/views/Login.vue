@@ -81,7 +81,7 @@ export default {
       isLoading.value = true
 
       try {
-        const response = await axios.post('http://localhost:5002/api/user/sign-in', {
+        const response = await axios.post('https://bitwisi.cloud/ranwal/api/user/sign-in', {
           email: form.value.email,
           password: form.value.password,
         })

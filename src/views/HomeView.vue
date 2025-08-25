@@ -442,7 +442,7 @@ const pagination = ref({
 })
 
 // API base URL
-const API_BASE_URL = 'http://localhost:5002/api'
+const API_BASE_URL = 'https://bitwisi.cloud/ranwal/api'
 
 // Image handling methods
 const onImageError = (event) => {

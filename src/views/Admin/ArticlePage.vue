@@ -497,7 +497,7 @@ import { ref, defineEmits, defineProps } from 'vue'
 const props = defineProps({
   apiBaseUrl: {
     type: String,
-    default: 'http://localhost:5002/api',
+    default: 'https://bitwisi.cloud/ranwal/api',
   },
 })
 

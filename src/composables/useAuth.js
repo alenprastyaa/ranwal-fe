@@ -35,7 +35,10 @@ export function useAuth() {
     error.value = null
 
     try {
-      const response = await axios.post('http://localhost:5002/api/user/sign-in', credentials)
+      const response = await axios.post(
+        'https://bitwisi.cloud/ranwal/api/user/sign-in',
+        credentials,
+      )
 
       if (response.data.status === 200) {
         const userData = response.data.data

@@ -264,7 +264,7 @@ import Swal from 'sweetalert2'
 
 const router = useRouter()
 const token = localStorage.getItem('token')
-const baseUrl = 'http://localhost:5002'
+const baseUrl = 'https://bitwisi.cloud/ranwal'
 
 const reports = ref([])
 const showModal = ref(false)

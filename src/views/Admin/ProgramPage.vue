@@ -65,7 +65,7 @@ const deletingIds = ref([])
 const fetchPrograms = async () => {
   loading.value = true
   try {
-    const res = await axios.get('http://localhost:5002/api/program/list', {
+    const res = await axios.get('https://bitwisi.cloud/ranwal/api/program/list', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -88,7 +88,7 @@ const createProgram = async () => {
   isCreating.value = true
   try {
     await axios.post(
-      'http://localhost:5002/api/program/create',
+      'https://bitwisi.cloud/ranwal/api/program/create',
       {
         name: programName.value,
       },
@@ -140,7 +140,7 @@ const deleteProgram = async (program) => {
   deletingIds.value.push(programId)
 
   try {
-    await axios.delete(`http://localhost:5002/api/program/${programId}/delete`, {
+    await axios.delete(`https://bitwisi.cloud/ranwal/api/program/${programId}/delete`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
