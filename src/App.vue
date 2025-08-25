@@ -16,7 +16,6 @@
 
 <script>
 import AdminSidebar from '@/components/AdminSidebar.vue'
-const role = localStorage.getItem('userRole')
 
 export default {
   name: 'App',
@@ -28,8 +27,13 @@ export default {
       const routesWithoutSidebar = ['/login']
       const requiresAuth = this.$route.meta?.requiresAuth
       const isLoginPage = this.$route.path === '/login'
+      const userRole = localStorage.getItem('userRole')
 
-      return requiresAuth && !isLoginPage
+      // Jangan tampilkan sidebar jika:
+      // - Di halaman login
+      // - Route tidak memerlukan auth
+      // - User role adalah 'user'
+      return requiresAuth && !isLoginPage && userRole !== 'user'
     },
   },
   methods: {

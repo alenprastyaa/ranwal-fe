@@ -3,9 +3,11 @@
     <!-- Logo/Brand -->
     <div class="p-6 border-b border-gray-700">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-          <i class="fas fa-cogs text-white"></i>
-        </div>
+        <img
+          class="w-7 h-7"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Coat_of_arms_of_Jakarta.svg/640px-Coat_of_arms_of_Jakarta.svg.png"
+          alt=""
+        />
         <div>
           <h2 class="text-xl font-bold">Admin Panel</h2>
           <p class="text-xs text-gray-400">Management System</p>
@@ -27,6 +29,18 @@
         <i class="fas fa-tachometer-alt w-5"></i>
         <span>Dashboard</span>
       </router-link>
+      <router-link
+        to="/admin-user-management"
+        :class="[
+          'flex items-center space-x-3 px-4 py-3 rounded-lg transition duration-200',
+          $route.path === '/dashboard'
+            ? 'bg-blue-600 text-white'
+            : 'text-gray-300 hover:bg-gray-800 hover:text-white',
+        ]"
+      >
+        <i class="fas fa-tachometer-alt w-5"></i>
+        <span>User Management</span>
+      </router-link>
 
       <router-link
         to="/admin-program"
@@ -37,7 +51,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-project-diagram w-5"></i>
+        <i class="fas fa-sitemap w-5"></i>
         <span>Program</span>
       </router-link>
 
@@ -50,7 +64,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-tasks w-5"></i>
+        <i class="fas fa-calendar-alt w-5"></i>
         <span>Kegiatan</span>
       </router-link>
 
@@ -63,7 +77,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-list w-5"></i>
+        <i class="fas fa-stream w-5"></i>
         <span>Sub Kegiatan</span>
       </router-link>
 
@@ -76,7 +90,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-clipboard-list w-5"></i>
+        <i class="fas fa-running w-5"></i>
         <span>Aktifitas</span>
       </router-link>
 
@@ -102,7 +116,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-code w-5"></i>
+        <i class="fas fa-hashtag w-5"></i>
         <span>Kode Rekening</span>
       </router-link>
 
@@ -115,9 +129,10 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-file-alt w-5"></i>
+        <i class="fas fa-user-graduate w-5"></i>
         <span>Pengampu</span>
       </router-link>
+
       <router-link
         to="/admin-laporan"
         :class="[
@@ -127,9 +142,10 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-file-alt w-5"></i>
+        <i class="fas fa-chart-line w-5"></i>
         <span>Laporan</span>
       </router-link>
+
       <router-link
         to="/admin-artikel"
         :class="[
@@ -139,9 +155,10 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-file-alt w-5"></i>
+        <i class="fas fa-pen-alt w-5"></i>
         <span>Buat Artikel</span>
       </router-link>
+
       <router-link
         to="/admin-list-artikel"
         :class="[
@@ -151,7 +168,7 @@
             : 'text-gray-300 hover:bg-gray-800 hover:text-white',
         ]"
       >
-        <i class="fas fa-file-alt w-5"></i>
+        <i class="fas fa-list-alt w-5"></i>
         <span>List Artikel</span>
       </router-link>
     </nav>

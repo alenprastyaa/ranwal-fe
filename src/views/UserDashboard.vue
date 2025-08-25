@@ -1,9 +1,12 @@
 <template>
   <div class="min-h-screen bg-gray-100 flex justify-center py-8">
-    <div class="max-w-2xl w-full px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl w-full px-4 sm:px-6 lg:px-8">
       <div class="bg-white border border-gray-200 rounded-lg p-6">
         <div class="flex justify-between items-center mb-6">
-          <h1 class="text-2xl font-medium text-gray-900">Sistem Manajemen Program</h1>
+          <p></p>
+          <h1 class="text-2xl font-medium text-gray-900">
+            SiREMON ( Sistem Informasi Perencanaan Terintegrasi Monitoring Kegiatan )
+          </h1>
           <button
             @click="logout"
             class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
@@ -283,7 +286,7 @@
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Harga</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Harga (Rp)</label>
                   <input
                     v-model.number="reportForm.price"
                     type="number"
@@ -292,6 +295,7 @@
                     @input="calculateTotal"
                     required
                   />
+                  <p class="text-xs text-gray-500 mt-1">{{ formatRupiah(reportForm.price) }}</p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Volume 1</label>
@@ -329,15 +333,15 @@
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1">Total Harga</label>
                   <input
-                    v-model.number="reportForm.total_price"
-                    type="number"
-                    placeholder="0"
+                    :value="formatRupiah(reportForm.total_price)"
+                    type="text"
+                    placeholder="Rp 0"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
                     readonly
                   />
                 </div>
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1">Pajak</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-1">Pajak (Rp)</label>
                   <input
                     v-model.number="reportForm.tax"
                     type="number"
@@ -345,15 +349,16 @@
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     @input="calculateAfterTax"
                   />
+                  <p class="text-xs text-gray-500 mt-1">{{ formatRupiah(reportForm.tax) }}</p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1"
                     >Total Setelah Pajak</label
                   >
                   <input
-                    v-model.number="reportForm.total_after_tax"
-                    type="number"
-                    placeholder="0"
+                    :value="formatRupiah(reportForm.total_after_tax)"
+                    type="text"
+                    placeholder="Rp 0"
                     class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
                     readonly
                   />
@@ -390,55 +395,7 @@
                 <span v-else>Buat Laporan</span>
               </button>
             </form>
-          </div>
-
-          <div>
-            <h2 class="text-lg font-medium text-gray-900 mb-3">Daftar Laporan</h2>
-            <div v-if="reports.length === 0" class="text-center py-4 bg-gray-50 rounded-lg">
-              <p class="text-gray-500">Buat laporan pertama Anda menggunakan form di atas</p>
-            </div>
-            <div v-else class="overflow-x-auto">
-              <table class="min-w-full">
-                <thead class="bg-gray-50">
-                  <tr>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase">
-                      Komponen
-                    </th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase">
-                      Hierarki
-                    </th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase">
-                      Pengampu
-                    </th>
-                    <th class="px-3 py-2 text-left text-xs font-medium text-gray-600 uppercase">
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="report in reports" :key="report.id" class="hover:bg-gray-50">
-                    <td class="px-3 py-2">
-                      <div class="font-medium text-gray-900">
-                        {{ report.component_name || report.component_code || '-' }}
-                      </div>
-                      <div class="text-sm text-gray-500">{{ report.component_code }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-sm text-gray-500">
-                      <div class="font-medium text-gray-900">
-                        {{ getProgramName(report.program_id) }}
-                      </div>
-                      <div>{{ getActionName(report.action_id) }}</div>
-                    </td>
-                    <td class="px-3 py-2 text-sm font-medium text-gray-900">
-                      {{ getSupporterName(report.supporter_id) }}
-                    </td>
-                    <td class="px-3 py-2 text-sm font-medium text-blue-600">
-                      Rp {{ formatNumber(report.total_after_tax || report.total_price) }}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
+            <ListLaporan />
           </div>
         </div>
       </div>
@@ -451,6 +408,7 @@ import { ref, reactive, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Swal from 'sweetalert2'
+import ListLaporan from './ListLaporan.vue'
 
 const router = useRouter()
 const token = localStorage.getItem('token')
@@ -749,6 +707,7 @@ const createReport = async () => {
     }
     await api.post('/api/detail-program/create', reportData)
     showSuccess('Laporan berhasil dibuat')
+    window.location.reload()
     resetReportForm()
     fetchReports()
   } catch (err) {
@@ -785,6 +744,20 @@ const resetReportForm = () => {
   })
 }
 
+// Enhanced Rupiah formatting function
+const formatRupiah = (num) => {
+  if (!num || isNaN(num)) return 'Rp 0'
+
+  const number = parseFloat(num)
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number)
+}
+
+// Keep the old formatNumber for backward compatibility if needed
 const formatNumber = (num) => new Intl.NumberFormat('id-ID').format(num || 0)
 
 const getProgramName = (id) => programs.value.find((p) => p.id === id)?.name || 'Unknown'
@@ -834,6 +807,19 @@ select:disabled {
   background: #9ca3af;
 }
 
+/* Enhanced styling for currency inputs */
+.currency-input {
+  position: relative;
+}
+
+.currency-preview {
+  font-size: 0.75rem;
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+/* Mobile responsive adjustments */
 @media (max-width: 640px) {
   table {
     font-size: 14px;
@@ -843,5 +829,67 @@ select:disabled {
   td {
     padding: 6px 2px;
   }
+
+  .currency-preview {
+    font-size: 0.6rem;
+  }
+}
+
+/* Animation for form transitions */
+.form-section {
+  transition: all 0.3s ease-in-out;
+}
+
+.disabled-section {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* Enhanced button hover effects */
+button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease;
+}
+
+/* Loading state enhancements */
+.loading-overlay {
+  position: relative;
+}
+
+.loading-overlay::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Success/Error state colors */
+.success-border {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 1px #10b981;
+}
+
+.error-border {
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 0 1px #ef4444;
+}
+
+/* Table enhancements */
+tbody tr:hover {
+  background-color: #f8fafc;
+  transition: background-color 0.15s ease;
+}
+
+/* Currency formatting in table */
+.currency-cell {
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
 }
 </style>

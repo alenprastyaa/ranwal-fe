@@ -1,26 +1,22 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
     <!-- Header -->
-    <header class="bg-white shadow-lg border-b-2 border-blue-100">
-      <div class="max-w-6xl mx-auto px-4 py-6">
+    <header class="bg-white shadow-lg border-b-2 border-blue-100 sticky top-0 z-50">
+      <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <div class="flex items-center justify-between">
-          <div class="flex items-center space-x-4">
-            <div
-              class="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center"
-            >
-              <span class="text-white font-bold text-xl">B</span>
-            </div>
-            <h1
-              class="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
-            >
-              Tech Blog
-            </h1>
+          <div class="flex items-center space-x-2 sm:space-x-4">
+            <img
+              class="w-6 h-6 sm:w-8 sm:h-8"
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Coat_of_arms_of_Jakarta.svg/640px-Coat_of_arms_of_Jakarta.svg.png"
+              alt=""
+            />
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text">SIREMON</h1>
           </div>
-          <nav class="hidden md:flex space-x-8">
+          <nav class="flex">
             <router-link
               to="/login"
               href="#"
-              class="bg-red-600 px-3 py-2 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+              class="bg-red-600 px-2 py-1.5 sm:px-3 sm:py-2 text-white text-sm sm:text-base rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
               >Sign In</router-link
             >
           </nav>
@@ -28,14 +24,19 @@
       </div>
     </header>
 
-    <main class="max-w-6xl mx-auto px-4 py-8">
+    <main class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       <!-- Article Detail View -->
-      <div v-if="selectedArticle" class="mb-8">
+      <div v-if="selectedArticle" class="mb-6 sm:mb-8">
         <button
           @click="selectedArticle = null"
-          class="mb-6 inline-flex items-center px-4 py-2 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200"
+          class="mb-4 sm:mb-6 inline-flex items-center px-3 py-2 sm:px-4 text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors duration-200 text-sm sm:text-base"
         >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -46,13 +47,13 @@
           Back to Articles
         </button>
 
-        <article class="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <!-- Cover Image Section - Fixed with proper image handling -->
+        <article class="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
+          <!-- Cover Image Section - Mobile Optimized -->
           <div class="relative">
             <!-- Main Cover Image -->
             <div
               v-if="selectedArticle.cover_image && !imageError"
-              class="h-96 relative overflow-hidden"
+              class="h-48 sm:h-64 md:h-80 lg:h-96 relative overflow-hidden"
             >
               <img
                 :src="selectedArticle.cover_image"
@@ -69,12 +70,14 @@
                 class="absolute inset-0 bg-gray-200 flex items-center justify-center"
               >
                 <div class="flex items-center space-x-2">
-                  <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                  <span class="text-gray-600">Loading image...</span>
+                  <div
+                    class="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600"
+                  ></div>
+                  <span class="text-gray-600 text-sm sm:text-base">Loading image...</span>
                 </div>
               </div>
 
-              <!-- Gradient overlay for better text readability -->
+              <!-- Gradient overlay -->
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
               ></div>
@@ -83,11 +86,11 @@
             <!-- Fallback when no image or error -->
             <div
               v-else
-              class="h-96 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 flex items-center justify-center relative"
+              class="h-48 sm:h-64 md:h-80 lg:h-96 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 flex items-center justify-center relative"
             >
-              <div class="text-center text-white">
+              <div class="text-center text-white px-4">
                 <svg
-                  class="w-16 h-16 mx-auto mb-4 opacity-60"
+                  class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 opacity-60"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -99,48 +102,56 @@
                     d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   ></path>
                 </svg>
-                <p class="text-lg font-medium opacity-80">
+                <p class="text-base sm:text-lg font-medium opacity-80">
                   {{ imageError ? 'Image failed to load' : 'No cover image' }}
                 </p>
-                <p class="text-sm opacity-60 mt-1" v-if="imageError && selectedArticle.cover_image">
+                <p
+                  class="text-xs sm:text-sm opacity-60 mt-1 break-all"
+                  v-if="imageError && selectedArticle.cover_image"
+                >
                   URL: {{ selectedArticle.cover_image }}
                 </p>
               </div>
-              <!-- Decorative pattern -->
             </div>
           </div>
 
           <!-- Article Content -->
-          <div class="p-8">
-            <div class="mb-6">
+          <div class="p-4 sm:p-6 lg:p-8">
+            <div class="mb-4 sm:mb-6">
               <!-- Tags -->
-              <div class="flex flex-wrap gap-2 mb-6">
+              <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                 <span
                   v-for="tag in selectedArticle.tags"
                   :key="tag"
-                  class="px-4 py-2 bg-blue-100 text-blue-700 text-sm font-medium rounded-full hover:bg-blue-200 transition-colors duration-200"
+                  class="px-2 py-1 sm:px-4 sm:py-2 bg-blue-100 text-blue-700 text-xs sm:text-sm font-medium rounded-full hover:bg-blue-200 transition-colors duration-200"
                 >
                   {{ tag }}
                 </span>
               </div>
 
               <!-- Title -->
-              <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1
+                class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
+              >
                 {{ selectedArticle.title }}
               </h1>
 
               <!-- Meta Information -->
-              <div class="flex flex-wrap items-center text-gray-600 text-sm gap-6 mb-8">
+              <div
+                class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center text-gray-600 text-xs sm:text-sm gap-3 sm:gap-6 mb-6 sm:mb-8"
+              >
                 <div class="flex items-center">
                   <div
-                    class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3 shadow-lg"
+                    class="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-3 shadow-lg"
                   >
-                    <span class="text-white text-sm font-semibold">{{
+                    <span class="text-white text-xs sm:text-sm font-semibold">{{
                       selectedArticle.name?.charAt(0) || '?'
                     }}</span>
                   </div>
                   <div class="flex flex-col">
-                    <span class="font-medium text-gray-900">{{ selectedArticle.name }}</span>
+                    <span class="font-medium text-gray-900 text-sm sm:text-base">{{
+                      selectedArticle.name
+                    }}</span>
                     <span class="text-xs text-gray-500">Author</span>
                   </div>
                 </div>
@@ -189,7 +200,7 @@
 
             <!-- Article Content -->
             <div
-              class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-blockquote:border-blue-300 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-lg"
+              class="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-blockquote:border-blue-300 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-lg mobile-prose"
               v-html="selectedArticle.content"
             ></div>
           </div>
@@ -199,11 +210,11 @@
       <!-- Articles List View -->
       <div v-else>
         <!-- Search Bar -->
-        <div class="mb-8">
-          <div class="relative max-w-md">
+        <div class="mb-6 sm:mb-8">
+          <div class="relative w-full sm:max-w-md">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
-                class="h-5 w-5 text-gray-400"
+                class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -220,26 +231,31 @@
               v-model="searchQuery"
               @input="searchArticles"
               type="text"
-              class="block w-full pl-10 pr-3 py-3 border border-gray-300 rounded-xl leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
+              class="block w-full pl-10 pr-3 py-2.5 sm:py-3 border border-gray-300 rounded-lg sm:rounded-xl text-sm sm:text-base leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent shadow-sm"
               placeholder="Search articles..."
             />
           </div>
         </div>
 
         <!-- Loading State -->
-        <div v-if="loading" class="text-center py-12">
+        <div v-if="loading" class="text-center py-8 sm:py-12">
           <div
-            class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"
+            class="inline-block animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600"
           ></div>
-          <p class="mt-4 text-gray-600">Loading articles...</p>
+          <p class="mt-4 text-gray-600 text-sm sm:text-base">Loading articles...</p>
         </div>
 
         <!-- Error State -->
-        <div v-else-if="error" class="text-center py-12">
+        <div v-else-if="error" class="text-center py-8 sm:py-12 px-4">
           <div
-            class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center"
+            class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center"
           >
-            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg
+              class="w-6 h-6 sm:w-8 sm:h-8 text-red-600"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -248,29 +264,31 @@
               ></path>
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">Failed to load articles</h3>
-          <p class="text-gray-600 mb-4">{{ error }}</p>
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+            Failed to load articles
+          </h3>
+          <p class="text-gray-600 mb-4 text-sm sm:text-base break-words">{{ error }}</p>
           <button
             @click="fetchArticles"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+            class="px-4 py-2 sm:px-6 bg-blue-600 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
             Try Again
           </button>
         </div>
 
         <!-- Articles Grid -->
-        <div v-else-if="articles.length > 0" class="space-y-8">
-          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div v-else-if="articles.length > 0" class="space-y-6 sm:space-y-8">
+          <div class="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <article
               v-for="article in articles"
               :key="article.id"
-              class="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 overflow-hidden cursor-pointer group"
+              class="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 overflow-hidden cursor-pointer group"
               @click="viewArticle(article.slug)"
             >
               <!-- Article Card Image -->
-              <div class="h-48 relative overflow-hidden">
+              <div class="h-40 sm:h-48 relative overflow-hidden">
                 <img
-                  v-if="article.cover_image"
+                  v-if="article.cover_image && !cardImageErrors.has(article.id)"
                   :src="article.cover_image"
                   :alt="article.title"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -283,7 +301,7 @@
                   class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 group-hover:from-blue-600 group-hover:to-purple-700 transition-all duration-300 flex items-center justify-center"
                 >
                   <svg
-                    class="w-12 h-12 text-white opacity-60"
+                    class="w-8 h-8 sm:w-12 sm:h-12 text-white opacity-60"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -304,19 +322,19 @@
                 </div>
               </div>
 
-              <div class="p-6">
+              <div class="p-4 sm:p-6">
                 <!-- Tags -->
-                <div class="flex flex-wrap gap-2 mb-3">
+                <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                   <span
                     v-for="tag in article.tags.slice(0, 2)"
                     :key="tag"
-                    class="px-2 py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full"
+                    class="px-2 py-0.5 sm:py-1 bg-blue-100 text-blue-700 text-xs font-medium rounded-full"
                   >
                     {{ tag }}
                   </span>
                   <span
                     v-if="article.tags.length > 2"
-                    class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full"
+                    class="px-2 py-0.5 sm:py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full"
                   >
                     +{{ article.tags.length - 2 }}
                   </span>
@@ -324,32 +342,38 @@
 
                 <!-- Title -->
                 <h2
-                  class="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200"
+                  class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight"
                 >
                   {{ article.title }}
                 </h2>
 
                 <!-- Excerpt -->
-                <p class="text-gray-600 text-sm mb-4 line-clamp-3">
+                <p
+                  class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3 leading-relaxed"
+                >
                   {{ article.excerpt || 'No excerpt available' }}
                 </p>
 
                 <!-- Meta -->
-                <div class="flex items-center justify-between text-xs text-gray-500">
+                <div
+                  class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 space-y-2 sm:space-y-0"
+                >
                   <div class="flex items-center">
                     <div
-                      class="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2"
+                      class="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center mr-2"
                     >
                       <span class="text-white text-xs font-semibold">{{
                         article.name?.charAt(0) || '?'
                       }}</span>
                     </div>
-                    <span class="font-medium">{{ article.name || 'Unknown' }}</span>
+                    <span class="font-medium truncate max-w-24 sm:max-w-none">{{
+                      article.name || 'Unknown'
+                    }}</span>
                   </div>
-                  <div class="flex items-center space-x-2">
-                    <span>{{ formatDate(article.created_at) }}</span>
-                    <span>•</span>
-                    <span>{{ article.views_count || 0 }} views</span>
+                  <div class="flex items-center space-x-2 text-xs">
+                    <span class="truncate">{{ formatDate(article.created_at) }}</span>
+                    <span class="hidden sm:inline">•</span>
+                    <span class="whitespace-nowrap">{{ article.views_count || 0 }} views</span>
                   </div>
                 </div>
               </div>
@@ -357,48 +381,52 @@
           </div>
 
           <!-- Pagination -->
-          <div v-if="pagination.total_page > 1" class="flex justify-center mt-12">
-            <nav class="flex items-center space-x-2">
+          <div v-if="pagination.total_page > 1" class="flex justify-center mt-8 sm:mt-12">
+            <nav class="flex items-center space-x-1 sm:space-x-2">
               <button
                 @click="changePage(pagination.current_page - 1)"
                 :disabled="pagination.current_page <= 1"
-                class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md sm:rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                Previous
+                <span class="hidden sm:inline">Previous</span>
+                <span class="sm:hidden">Prev</span>
               </button>
 
-              <span
-                v-for="page in getPageNumbers()"
-                :key="page"
-                @click="changePage(page)"
-                :class="[
-                  'px-4 py-2 text-sm font-medium rounded-lg cursor-pointer transition-colors duration-200',
-                  page === pagination.current_page
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50',
-                ]"
-              >
-                {{ page }}
-              </span>
+              <div class="flex items-center space-x-1 sm:space-x-2 max-w-xs overflow-x-auto">
+                <span
+                  v-for="page in getPageNumbers()"
+                  :key="page"
+                  @click="changePage(page)"
+                  :class="[
+                    'px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium rounded-md sm:rounded-lg cursor-pointer transition-colors duration-200 whitespace-nowrap',
+                    page === pagination.current_page
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-700 bg-white border border-gray-300 hover:bg-gray-50',
+                  ]"
+                >
+                  {{ page }}
+                </span>
+              </div>
 
               <button
                 @click="changePage(pagination.current_page + 1)"
                 :disabled="pagination.current_page >= pagination.total_page"
-                class="px-4 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                class="px-2 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-md sm:rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
-                Next
+                <span class="hidden sm:inline">Next</span>
+                <span class="sm:hidden">Next</span>
               </button>
             </nav>
           </div>
         </div>
 
         <!-- Empty State -->
-        <div v-else class="text-center py-12">
+        <div v-else class="text-center py-8 sm:py-12 px-4">
           <div
-            class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center"
+            class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center"
           >
             <svg
-              class="w-8 h-8 text-gray-400"
+              class="w-6 h-6 sm:w-8 sm:h-8 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -411,8 +439,8 @@
               ></path>
             </svg>
           </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">No articles found</h3>
-          <p class="text-gray-600">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">No articles found</h3>
+          <p class="text-gray-600 text-sm sm:text-base">
             Try adjusting your search terms or check back later for new content.
           </p>
         </div>
@@ -552,18 +580,21 @@ const changePage = (page) => {
   }
 }
 
-// Get page numbers for pagination
+// Get page numbers for pagination (mobile optimized)
 const getPageNumbers = () => {
   const pages = []
   const current = pagination.value.current_page
   const total = pagination.value.total_page
 
-  // Show up to 5 page numbers
-  let start = Math.max(1, current - 2)
-  let end = Math.min(total, start + 4)
+  // Show fewer pages on mobile (3 instead of 5)
+  const isMobile = window.innerWidth < 640
+  const maxPages = isMobile ? 3 : 5
 
-  if (end - start < 4) {
-    start = Math.max(1, end - 4)
+  let start = Math.max(1, current - Math.floor(maxPages / 2))
+  let end = Math.min(total, start + maxPages - 1)
+
+  if (end - start < maxPages - 1) {
+    start = Math.max(1, end - maxPages + 1)
   }
 
   for (let i = start; i <= end; i++) {
@@ -610,71 +641,137 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* Enhanced prose styling */
-.prose {
+/* Mobile-optimized prose styling */
+.mobile-prose {
   max-width: none;
   line-height: 1.7;
 }
 
-.prose p {
-  margin-bottom: 1.5rem;
+.mobile-prose p {
+  margin-bottom: 1.25rem;
   text-align: justify;
+  hyphens: auto;
 }
 
-.prose h1,
-.prose h2,
-.prose h3,
-.prose h4,
-.prose h5,
-.prose h6 {
-  margin-top: 2.5rem;
-  margin-bottom: 1.5rem;
+.mobile-prose h1,
+.mobile-prose h2,
+.mobile-prose h3,
+.mobile-prose h4,
+.mobile-prose h5,
+.mobile-prose h6 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
   font-weight: 700;
   line-height: 1.3;
 }
 
-.prose h1 {
-  font-size: 2.25rem;
-}
-.prose h2 {
-  font-size: 1.875rem;
-}
-.prose h3 {
-  font-size: 1.5rem;
-}
-.prose h4 {
-  font-size: 1.25rem;
+@media (max-width: 640px) {
+  .mobile-prose h1 {
+    font-size: 1.5rem;
+  }
+  .mobile-prose h2 {
+    font-size: 1.25rem;
+  }
+  .mobile-prose h3 {
+    font-size: 1.125rem;
+  }
+  .mobile-prose h4 {
+    font-size: 1rem;
+  }
+
+  .mobile-prose p {
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+  }
+
+  .mobile-prose ul,
+  .mobile-prose ol {
+    margin: 1rem 0;
+    padding-left: 1.25rem;
+  }
+
+  .mobile-prose li {
+    margin: 0.375rem 0;
+    font-size: 0.9rem;
+  }
+
+  .mobile-prose blockquote {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    font-size: 0.9rem;
+  }
+
+  .mobile-prose code {
+    font-size: 0.8rem;
+  }
+
+  .mobile-prose pre {
+    font-size: 0.8rem;
+    padding: 1rem;
+    margin: 1.5rem -1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+  }
 }
 
-.prose ul,
-.prose ol {
+.mobile-prose ul,
+.mobile-prose ol {
   margin: 1.5rem 0;
   padding-left: 1.5rem;
 }
 
-.prose li {
+.mobile-prose li {
   margin: 0.5rem 0;
 }
 
-.prose blockquote {
+.mobile-prose blockquote {
   margin: 2rem 0;
   font-style: italic;
 }
 
-.prose code {
+.mobile-prose code {
   background-color: #f3f4f6;
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
   font-size: 0.875em;
+  word-break: break-all;
 }
 
-.prose pre {
+.mobile-prose pre {
   background-color: #1f2937;
   color: #f9fafb;
   padding: 1.5rem;
   border-radius: 0.5rem;
   margin: 1.5rem 0;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.mobile-prose pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+  word-break: normal;
+}
+
+.mobile-prose img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.5rem;
+  margin: 1rem 0;
+}
+
+.mobile-prose table {
+  font-size: 0.875rem;
+  overflow-x: auto;
+  display: block;
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .mobile-prose table {
+    font-size: 0.8rem;
+  }
 }
 
 /* Smooth transitions */
@@ -682,10 +779,32 @@ onMounted(() => {
   transition: all 0.2s ease;
 }
 
+/* Touch-friendly interactions */
+@media (max-width: 768px) {
+  button,
+  .cursor-pointer {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Improve tap targets */
+  nav a,
+  .cursor-pointer {
+    padding: 0.75rem;
+  }
+}
+
 /* Custom scrollbar for webkit browsers */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
+}
+
+@media (min-width: 768px) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
 }
 
 ::-webkit-scrollbar-track {
@@ -700,5 +819,118 @@ onMounted(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a1a1a1;
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Improve focus visibility for accessibility */
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Prevent zoom on input focus on iOS */
+@media screen and (max-width: 767px) {
+  input[type='text'],
+  input[type='search'],
+  input[type='email'],
+  input[type='password'] {
+    font-size: 16px;
+  }
+}
+
+/* Loading animation improvements */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Hover effects disabled on touch devices */
+@media (hover: none) {
+  .hover\:scale-105:hover {
+    transform: none;
+  }
+
+  .hover\:-translate-y-1:hover,
+  .hover\:-translate-y-2:hover {
+    transform: none;
+  }
+}
+
+/* Safe area support for devices with notches */
+@supports (padding: max(0px)) {
+  .safe-top {
+    padding-top: max(1rem, env(safe-area-inset-top));
+  }
+
+  .safe-bottom {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+
+  .safe-left {
+    padding-left: max(1rem, env(safe-area-inset-left));
+  }
+
+  .safe-right {
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+}
+
+/* High DPI display optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  img {
+    image-rendering: -webkit-optimize-contrast;
+  }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Dark mode support (if needed in future) */
+@media (prefers-color-scheme: dark) {
+  /* Dark mode styles can be added here */
+}
+
+/* Print styles */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  .shadow-lg,
+  .shadow-xl,
+  .shadow-2xl {
+    box-shadow: none !important;
+  }
 }
 </style>

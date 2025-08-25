@@ -13,6 +13,7 @@ import LaporanPage from '@/views/Admin/LaporanPage.vue'
 import HomeView from '@/views/HomeView.vue'
 import ArticlePage from '@/views/Admin/ArticlePage.vue'
 import ListArtikel from '@/views/Admin/ListArtikel.vue'
+import UserManagement from '@/views/Admin/UserManagement.vue'
 
 const routes = [
   {
@@ -89,6 +90,12 @@ const routes = [
     path: '/admin-list-artikel',
     name: 'admin-list artikel',
     component: ListArtikel,
+    meta: { requiresAuth: true, role: 'admin' },
+  },
+  {
+    path: '/admin-user-management',
+    name: 'admin user management',
+    component: UserManagement,
     meta: { requiresAuth: true, role: 'admin' },
   },
   {

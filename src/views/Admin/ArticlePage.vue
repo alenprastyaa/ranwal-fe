@@ -2,15 +2,14 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
     <main class="max-w-8xl mx-auto px-4 py-8">
       <form @submit.prevent="handleSubmit" class="bg-white rounded-2xl shadow-xl p-8 space-y-8">
-        <!-- Article Info Section -->
         <div class="space-y-6">
           <div class="border-l-4 border-blue-500 pl-4">
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Article Information</h2>
-            <p class="text-gray-600">Fill in the basic information about your article.</p>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Informasi Artikel</h2>
+            <p class="text-gray-600">Isi informasi dasar tentang artikel Anda.</p>
           </div>
           <div>
             <label for="title" class="block text-sm font-semibold text-gray-700 mb-2">
-              Article Title *
+              Judul Artikel *
             </label>
             <input
               id="title"
@@ -18,15 +17,13 @@
               type="text"
               required
               class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-              placeholder="Enter your article title..."
+              placeholder="Masukkan judul artikel Anda..."
             />
           </div>
 
-          <!-- Cover Image Section -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2"> Cover Image </label>
+            <label class="block text-sm font-semibold text-gray-700 mb-2"> Gambar Sampul </label>
 
-            <!-- Upload Section -->
             <div class="mb-4">
               <div class="flex items-center gap-4">
                 <input
@@ -71,13 +68,10 @@
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  {{ isUploading ? 'Uploading...' : 'Upload Image' }}
+                  {{ isUploading ? 'Mengunggah...' : 'Unggah Gambar' }}
                 </button>
-
-                <span class="text-sm text-gray-500"> or enter URL manually below </span>
               </div>
 
-              <!-- Upload Status -->
               <div
                 v-if="uploadMessage"
                 :class="[
@@ -90,28 +84,12 @@
                 {{ uploadMessage }}
               </div>
             </div>
-
-            <!-- URL Input -->
-            <div>
-              <input
-                id="cover_image"
-                v-model="formData.cover_image"
-                type="url"
-                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="https://example.com/image.jpg (or upload file above)"
-              />
-              <p class="mt-1 text-sm text-gray-500">
-                Upload an image file above or enter a cover image URL manually
-              </p>
-            </div>
-
-            <!-- Image Preview -->
             <div v-if="formData.cover_image" class="mt-4">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Preview:</label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Pratinjau:</label>
               <div class="relative inline-block">
                 <img
                   :src="formData.cover_image"
-                  alt="Cover image preview"
+                  alt="Pratinjau gambar sampul"
                   class="max-w-xs max-h-48 rounded-lg shadow-md border border-gray-200"
                   @error="handleImageError"
                   @load="handleImageLoad"
@@ -120,7 +98,7 @@
                   type="button"
                   @click="removeCoverImage"
                   class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors duration-200"
-                  title="Remove image"
+                  title="Hapus gambar"
                 >
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -135,9 +113,8 @@
             </div>
           </div>
 
-          <!-- Tags -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-2">Tags</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-2">Tag</label>
             <div class="flex flex-wrap gap-2 mb-3" v-if="formData.tags.length > 0">
               <span
                 v-for="(tag, index) in formData.tags"
@@ -167,24 +144,23 @@
                 @keyup.enter="addTag"
                 type="text"
                 class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200"
-                placeholder="Add a tag..."
+                placeholder="Tambahkan tag..."
               />
               <button
                 type="button"
                 @click="addTag"
                 class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
               >
-                Add Tag
+                Tambah Tag
               </button>
             </div>
             <p class="mt-1 text-sm text-gray-500">
-              Add tags to help categorize your article (press Enter to add)
+              Tambahkan tag untuk membantu mengkategorikan artikel Anda (tekan Enter untuk menambah)
             </p>
           </div>
 
-          <!-- Status -->
           <div>
-            <label class="block text-sm font-semibold text-gray-700 mb-3">Publication Status</label>
+            <label class="block text-sm font-semibold text-gray-700 mb-3">Status Publikasi</label>
             <div class="grid grid-cols-3 gap-4">
               <label
                 class="flex items-center p-4 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors duration-200"
@@ -196,8 +172,8 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
                 <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900">Published</div>
-                  <div class="text-xs text-gray-500">Visible to everyone</div>
+                  <div class="text-sm font-medium text-gray-900">Dipublikasikan</div>
+                  <div class="text-xs text-gray-500">Terlihat oleh semua orang</div>
                 </div>
               </label>
               <label
@@ -210,8 +186,8 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
                 <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900">Draft</div>
-                  <div class="text-xs text-gray-500">Save for later</div>
+                  <div class="text-sm font-medium text-gray-900">Draf</div>
+                  <div class="text-xs text-gray-500">Simpan untuk nanti</div>
                 </div>
               </label>
               <label
@@ -224,25 +200,24 @@
                   class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
                 />
                 <div class="ml-3">
-                  <div class="text-sm font-medium text-gray-900">Archived</div>
-                  <div class="text-xs text-gray-500">Hidden from public</div>
+                  <div class="text-sm font-medium text-gray-900">Diarsipkan</div>
+                  <div class="text-xs text-gray-500">Disembunyikan dari publik</div>
                 </div>
               </label>
             </div>
           </div>
         </div>
 
-        <!-- Content Editor Section -->
         <div class="space-y-6">
           <div class="border-l-4 border-purple-500 pl-4">
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Article Content</h2>
-            <p class="text-gray-600">Write your article content using HTML formatting.</p>
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Konten Artikel</h2>
+            <p class="text-gray-600">Tulis konten artikel Anda menggunakan format HTML.</p>
           </div>
 
           <div>
             <div class="flex items-center justify-between mb-4">
               <label for="content" class="block text-sm font-semibold text-gray-700">
-                Content *
+                Konten *
               </label>
               <div class="flex gap-2">
                 <button
@@ -264,12 +239,11 @@
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                     ></path>
                   </svg>
-                  {{ showPreview ? 'Hide Preview' : 'Show Preview' }}
+                  {{ showPreview ? 'Sembunyikan Pratinjau' : 'Tampilkan Pratinjau' }}
                 </button>
               </div>
             </div>
 
-            <!-- Editor Toolbar -->
             <div class="border border-gray-300 border-b-0 rounded-t-lg bg-gray-50 p-4">
               <div class="flex flex-wrap gap-3">
                 <div class="flex gap-1">
@@ -277,7 +251,7 @@
                     type="button"
                     @click="formatText('bold')"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 font-bold text-sm"
-                    title="Bold (Ctrl+B)"
+                    title="Tebal (Ctrl+B)"
                   >
                     <strong>B</strong>
                   </button>
@@ -285,7 +259,7 @@
                     type="button"
                     @click="formatText('italic')"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 italic text-sm"
-                    title="Italic (Ctrl+I)"
+                    title="Miring (Ctrl+I)"
                   >
                     <em>I</em>
                   </button>
@@ -293,7 +267,7 @@
                     type="button"
                     @click="formatText('underline')"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 underline text-sm"
-                    title="Underline (Ctrl+U)"
+                    title="Garis Bawah (Ctrl+U)"
                   >
                     U
                   </button>
@@ -306,7 +280,7 @@
                     type="button"
                     @click="insertHeading(1)"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 font-bold text-sm"
-                    title="Heading 1"
+                    title="Judul 1"
                   >
                     H1
                   </button>
@@ -314,7 +288,7 @@
                     type="button"
                     @click="insertHeading(2)"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 font-bold text-sm"
-                    title="Heading 2"
+                    title="Judul 2"
                   >
                     H2
                   </button>
@@ -322,7 +296,7 @@
                     type="button"
                     @click="insertHeading(3)"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 font-bold text-sm"
-                    title="Heading 3"
+                    title="Judul 3"
                   >
                     H3
                   </button>
@@ -330,7 +304,7 @@
                     type="button"
                     @click="insertParagraph()"
                     class="px-3 py-2 bg-white border border-gray-300 rounded hover:bg-gray-100 transition-colors duration-200 text-sm"
-                    title="Paragraph"
+                    title="Paragraf"
                   >
                     P
                   </button>
@@ -338,9 +312,7 @@
               </div>
             </div>
 
-            <!-- Content Input Area -->
             <div class="relative">
-              <!-- Content Textarea -->
               <textarea
                 id="content"
                 ref="contentEditor"
@@ -349,16 +321,10 @@
                 rows="20"
                 class="w-full px-4 py-4 border border-gray-300 border-t-0 rounded-b-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 resize-none font-mono text-sm leading-relaxed"
                 :class="{ hidden: showPreview }"
-                placeholder="Write your article content here... You can use HTML tags like <p>, <h1>, <h2>, <strong>, <em>, etc.
-
-Example:
-<h1>Main Title</h1>
-<p>Your paragraph content goes here...</p>
-<h2>Subtitle</h2>
-<p>More content with <strong>bold</strong> and <em>italic</em> text.</p>"
+                placeholder="Tulis konten artikel Anda di sini... Anda bisa menggunakan tag HTML seperti <p>, <h1>, <h2>, <strong>, <em>, dll.
+"
               ></textarea>
 
-              <!-- Preview -->
               <div
                 v-if="showPreview"
                 class="border border-gray-300 border-t-0 rounded-b-lg p-6 min-h-[500px] bg-white prose prose-blue prose-lg max-w-none"
@@ -378,19 +344,18 @@ Example:
                       d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                     ></path>
                   </svg>
-                  Preview will appear here as you write...
+                  Pratinjau akan muncul di sini saat Anda menulis...
                 </div>
               </div>
             </div>
 
             <p class="mt-2 text-sm text-gray-500">
-              Use HTML tags to format your content. Click the toolbar buttons to insert common
-              formatting.
+              Gunakan tag HTML untuk memformat konten Anda. Klik tombol toolbar untuk menyisipkan
+              format umum.
             </p>
           </div>
         </div>
 
-        <!-- Submit Section -->
         <div class="border-t border-gray-200 pt-8">
           <div class="flex flex-col sm:flex-row gap-4 justify-end">
             <button
@@ -398,7 +363,7 @@ Example:
               @click="handleCancel"
               class="px-8 py-3 text-gray-700 bg-gray-200 rounded-lg hover:bg-gray-300 transition-colors duration-200 font-medium order-2 sm:order-1"
             >
-              Cancel
+              Batal
             </button>
             <button
               type="submit"
@@ -426,7 +391,7 @@ Example:
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                   ></path>
                 </svg>
-                Publishing...
+                Mempublikasikan...
               </span>
               <span v-else class="flex items-center justify-center">
                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -437,12 +402,11 @@ Example:
                     d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   ></path>
                 </svg>
-                {{ formData.status === 'published' ? 'Publish Article' : 'Save Article' }}
+                {{ formData.status === 'published' ? 'Publikasikan Artikel' : 'Simpan Artikel' }}
               </span>
             </button>
           </div>
 
-          <!-- Success/Error Messages -->
           <div
             v-if="submitMessage"
             :class="[
@@ -504,7 +468,7 @@ const props = defineProps({
 // Emits
 const emit = defineEmits(['cancel', 'success'])
 
-// Reactive data
+// Data reaktif
 const formData = ref({
   title: '',
   content: '',
@@ -520,11 +484,11 @@ const showPreview = ref(false)
 const contentEditor = ref(null)
 const fileInput = ref(null)
 const token = localStorage.getItem('token')
-// File upload related
+// Terkait unggah file
 const isUploading = ref(false)
 const uploadMessage = ref('')
 
-// Methods
+// Metode
 const addTag = () => {
   const tag = newTag.value.trim()
   if (tag && !formData.value.tags.includes(tag)) {
@@ -541,16 +505,16 @@ const handleFileUpload = async (event) => {
   const file = event.target.files[0]
   if (!file) return
 
-  // Validate file type
+  // Validasi tipe file
   if (!file.type.startsWith('image/')) {
-    uploadMessage.value = 'Error: Please select an image file'
+    uploadMessage.value = 'Error: Silakan pilih file gambar'
     return
   }
 
-  // Validate file size (5MB limit)
+  // Validasi ukuran file (batas 5MB)
   const maxSize = 5 * 1024 * 1024 // 5MB
   if (file.size > maxSize) {
-    uploadMessage.value = 'Error: File size must be less than 5MB'
+    uploadMessage.value = 'Error: Ukuran file harus kurang dari 5MB'
     return
   }
 
@@ -570,21 +534,21 @@ const handleFileUpload = async (event) => {
 
     if (data.status === 200 && data.data && data.data.path) {
       formData.value.cover_image = data.data.path
-      uploadMessage.value = 'Image uploaded successfully!'
+      uploadMessage.value = 'Gambar berhasil diunggah!'
 
-      // Clear success message after 3 seconds
+      // Hapus pesan sukses setelah 3 detik
       setTimeout(() => {
         uploadMessage.value = ''
       }, 3000)
     } else {
-      uploadMessage.value = `Error: ${data.message || 'Failed to upload file'}`
+      uploadMessage.value = `Error: ${data.message || 'Gagal mengunggah file'}`
     }
   } catch (error) {
-    console.error('Upload error:', error)
-    uploadMessage.value = 'Error: Network error - Unable to upload file'
+    console.error('Error unggah:', error)
+    uploadMessage.value = 'Error: Error jaringan - Tidak dapat mengunggah file'
   } finally {
     isUploading.value = false
-    // Clear file input
+    // Bersihkan input file
     if (fileInput.value) {
       fileInput.value.value = ''
     }
@@ -597,13 +561,13 @@ const removeCoverImage = () => {
 }
 
 const handleImageError = () => {
-  // Handle broken image URL
-  console.log('Image failed to load')
+  // Tangani URL gambar yang rusak
+  console.log('Gambar gagal dimuat')
 }
 
 const handleImageLoad = () => {
-  // Handle successful image load
-  console.log('Image loaded successfully')
+  // Tangani gambar yang berhasil dimuat
+  console.log('Gambar berhasil dimuat')
 }
 
 const formatText = (command) => {
@@ -618,13 +582,13 @@ const formatText = (command) => {
       case 'bold':
         replacement = selectedText
           ? `<strong>${selectedText}</strong>`
-          : '<strong>Bold text</strong>'
+          : '<strong>Teks tebal</strong>'
         break
       case 'italic':
-        replacement = selectedText ? `<em>${selectedText}</em>` : '<em>Italic text</em>'
+        replacement = selectedText ? `<em>${selectedText}</em>` : '<em>Teks miring</em>'
         break
       case 'underline':
-        replacement = selectedText ? `<u>${selectedText}</u>` : '<u>Underlined text</u>'
+        replacement = selectedText ? `<u>${selectedText}</u>` : '<u>Teks bergaris bawah</u>'
         break
     }
 
@@ -635,7 +599,7 @@ const formatText = (command) => {
         formData.value.content.substring(end)
       formData.value.content = newContent
 
-      // Set cursor position after the inserted text
+      // Atur posisi kursor setelah teks yang disisipkan
       setTimeout(() => {
         const newPosition = start + replacement.length
         editor.setSelectionRange(newPosition, newPosition)
@@ -650,7 +614,7 @@ const insertHeading = (level = 2) => {
   if (editor) {
     const start = editor.selectionStart
     const end = editor.selectionEnd
-    const selectedText = editor.value.substring(start, end) || `Heading ${level}`
+    const selectedText = editor.value.substring(start, end) || `Judul ${level}`
 
     const replacement = `<h${level}>${selectedText}</h${level}>`
     const newContent =
@@ -672,7 +636,7 @@ const insertParagraph = () => {
   if (editor) {
     const start = editor.selectionStart
     const end = editor.selectionEnd
-    const selectedText = editor.value.substring(start, end) || 'Your paragraph text here.'
+    const selectedText = editor.value.substring(start, end) || 'Teks paragraf Anda di sini.'
 
     const replacement = `<p>${selectedText}</p>`
     const newContent =
@@ -695,7 +659,7 @@ const togglePreview = () => {
 
 const handleSubmit = async () => {
   if (!formData.value.title.trim() || !formData.value.content.trim()) {
-    submitMessage.value = 'Error: Title and content are required'
+    submitMessage.value = 'Error: Judul dan konten wajib diisi'
     return
   }
 
@@ -715,25 +679,25 @@ const handleSubmit = async () => {
     const data = await response.json()
 
     if (data.status === 200 || data.status === 201) {
-      submitMessage.value = `Article ${formData.value.status === 'published' ? 'published' : 'saved'} successfully!`
+      submitMessage.value = `Artikel berhasil ${formData.value.status === 'published' ? 'dipublikasikan' : 'disimpan'}!`
 
-      // Emit success event and redirect after delay
+      // Kirim event sukses dan alihkan setelah penundaan
       setTimeout(() => {
         emit('success', data.data)
       }, 1500)
     } else {
-      submitMessage.value = `Error: ${data.message || 'Failed to save article'}`
+      submitMessage.value = `Error: ${data.message || 'Gagal menyimpan artikel'}`
     }
   } catch (err) {
-    submitMessage.value = 'Error: Network error - Unable to connect to server'
-    console.error('Submit error:', err)
+    submitMessage.value = 'Error: Error jaringan - Tidak dapat terhubung ke server'
+    console.error('Error pengiriman:', err)
   } finally {
     isSubmitting.value = false
   }
 }
 
 const handleCancel = () => {
-  // Reset form
+  // Atur ulang formulir
   formData.value = {
     title: '',
     content: '',
@@ -746,7 +710,7 @@ const handleCancel = () => {
   uploadMessage.value = ''
   showPreview.value = false
 
-  // Emit cancel event
+  // Kirim event batal
   emit('cancel')
 }
 </script>
@@ -826,7 +790,7 @@ const handleCancel = () => {
   margin: 0.5rem 0;
 }
 
-/* Custom scrollbar */
+/* Scrollbar kustom */
 textarea::-webkit-scrollbar {
   width: 8px;
 }
