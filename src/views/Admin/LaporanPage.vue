@@ -457,10 +457,11 @@ const downloadReport = async () => {
   loading.download = true
   try {
     const response = await api.get('/api/detail-program/report', { year: 2025 })
-    if (response.status === 200 && response.data.path) {
+    if (response.status === 200 && response.data && response.data.path) {
       const link = document.createElement('a')
       link.href = response.data.path
-      link.download = response.data.fileInfo.originalName || 'report.xlsx'
+      link.download = response.data.originalName || response.data.filename || 'report.xlsx'
+      link.target = '_blank' // Open in new tab as fallback
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
@@ -469,7 +470,9 @@ const downloadReport = async () => {
       showError('Gagal mengunduh laporan')
     }
   } catch (err) {
-    showError('Gagal mengunduh laporan')
+    console.error('Download error:', err)
+    const errorMessage = err.response?.data?.message || 'Gagal mengunduh laporan'
+    showError(errorMessage)
   } finally {
     loading.download = false
   }

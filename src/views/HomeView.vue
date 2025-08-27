@@ -16,7 +16,7 @@
             <router-link
               to="/login"
               href="#"
-              class="bg-red-600 px-2 py-1.5 sm:px-3 sm:py-2 text-white text-sm sm:text-base rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
+              class="bg-red-600 text-white text-sm sm:text-base rounded-lg hover:bg-red-700 transition-colors duration-200 font-medium"
               >Sign In</router-link
             >
           </nav>
