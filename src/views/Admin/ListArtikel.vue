@@ -1,10 +1,8 @@
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <!-- Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800 mb-4">Manajemen Artikel</h1>
 
-      <!-- Search Bar -->
       <div class="flex justify-between items-center">
         <div class="relative">
           <input
@@ -39,13 +37,11 @@
       </div>
     </div>
 
-    <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       <span class="ml-2 text-gray-600">Memuat data...</span>
     </div>
 
-    <!-- Error State -->
     <div
       v-else-if="error"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
@@ -54,7 +50,6 @@
       <button @click="fetchArticles" class="mt-2 text-sm underline">Coba lagi</button>
     </div>
 
-    <!-- Table -->
     <div v-else class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -94,7 +89,6 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="article in articles" :key="article.id" class="hover:bg-gray-50">
-              <!-- Article Info -->
               <td class="px-6 py-4">
                 <div class="flex items-start space-x-3">
                   <div class="flex-shrink-0">
@@ -143,12 +137,10 @@
                 </div>
               </td>
 
-              <!-- Author -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ article.name }}
               </td>
 
-              <!-- Status -->
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
@@ -162,17 +154,14 @@
                 </span>
               </td>
 
-              <!-- Views -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatNumber(article.views_count) }}
               </td>
 
-              <!-- Date -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(article.created_at) }}
               </td>
 
-              <!-- Actions -->
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button
@@ -209,6 +198,31 @@
                       ></path>
                     </svg>
                   </button>
+                  <button
+                    @click="confirmDelete(article)"
+                    :disabled="deletingIds.includes(article.id)"
+                    class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50 disabled:opacity-50"
+                    title="Hapus"
+                  >
+                    <svg
+                      v-if="!deletingIds.includes(article.id)"
+                      class="h-4 w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path>
+                    </svg>
+                    <div
+                      v-else
+                      class="animate-spin rounded-full h-4 w-4 border-t-2 border-red-600"
+                    ></div>
+                  </button>
                 </div>
               </td>
             </tr>
@@ -216,7 +230,6 @@
         </table>
       </div>
 
-      <!-- Empty State -->
       <div v-if="!loading && articles.length === 0" class="text-center py-8">
         <svg
           class="mx-auto h-12 w-12 text-gray-400"
@@ -241,7 +254,6 @@
         </p>
       </div>
 
-      <!-- Pagination -->
       <div v-if="filter.total_page > 1" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 flex justify-between sm:hidden">
@@ -323,7 +335,6 @@
       </div>
     </div>
 
-    <!-- Edit Modal -->
     <div
       v-if="showEditModal"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
@@ -351,7 +362,6 @@
           </div>
 
           <form @submit.prevent="updateArticle" class="space-y-6">
-            <!-- Title -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Judul Artikel <span class="text-red-500">*</span>
@@ -366,7 +376,6 @@
               />
             </div>
 
-            <!-- Content -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Konten </label>
               <textarea
@@ -381,7 +390,6 @@
               </p>
             </div>
 
-            <!-- Cover Image -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Cover Image URL </label>
               <input
@@ -391,7 +399,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 :disabled="updating"
               />
-              <!-- Image Preview -->
               <div v-if="editForm.cover_image" class="mt-2">
                 <img
                   :src="editForm.cover_image"
@@ -402,7 +409,6 @@
               </div>
             </div>
 
-            <!-- Status -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Status <span class="text-red-500">*</span>
@@ -419,7 +425,6 @@
               </select>
             </div>
 
-            <!-- Tags -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Tags </label>
               <div class="space-y-2">
@@ -458,7 +463,6 @@
               </div>
             </div>
 
-            <!-- Form Actions -->
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 type="button"
@@ -481,7 +485,6 @@
       </div>
     </div>
 
-    <!-- Success/Error Messages -->
     <div
       v-if="message.text"
       :class="{
@@ -532,6 +535,7 @@
 </template>
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import Swal from 'sweetalert2'
 
 // Reactive state
 const articles = ref([])
@@ -561,6 +565,9 @@ const editForm = reactive({
 // Tag management
 const newTag = ref('')
 const imageError = ref(false)
+
+// Delete state
+const deletingIds = ref([])
 
 // Message state
 const message = reactive({
@@ -792,9 +799,6 @@ const updateArticle = async () => {
 
       showMessage('Artikel berhasil diperbarui', 'success')
       closeEditModal()
-
-      // Optionally refresh the list to get latest data
-      // fetchArticles()
     } else {
       throw new Error(data.message || 'Gagal memperbarui artikel')
     }
@@ -802,6 +806,56 @@ const updateArticle = async () => {
     showMessage(err.message || 'Terjadi kesalahan saat memperbarui artikel', 'error')
   } finally {
     updating.value = false
+  }
+}
+
+// Confirm deletion
+const confirmDelete = async (article) => {
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Apakah Anda yakin ingin menghapus artikel "${article.title}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal',
+  })
+
+  if (result.isConfirmed) {
+    deleteArticle(article.slug, article.id)
+  }
+}
+
+// Delete article
+const deleteArticle = async (slug, id) => {
+  deletingIds.value.push(id)
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/article/${slug}/delete`, {
+      method: 'DELETE',
+      headers: createHeaders(),
+    })
+    const data = await response.json()
+
+    if (data.status === 200) {
+      articles.value = articles.value.filter((a) => a.id !== id)
+      showMessage('Artikel berhasil dihapus', 'success')
+      // Re-fetch data if the last article on the page is deleted
+      if (articles.value.length === 0 && currentPage.value > 1) {
+        currentPage.value--
+        fetchArticles()
+      } else if (articles.value.length === 0) {
+        // Handle case where no articles are left on page 1
+        fetchArticles()
+      }
+    } else {
+      throw new Error(data.message || 'Gagal menghapus artikel')
+    }
+  } catch (err) {
+    showMessage(err.message || 'Terjadi kesalahan saat menghapus artikel', 'error')
+  } finally {
+    deletingIds.value = deletingIds.value.filter((articleId) => articleId !== id)
   }
 }
 
@@ -843,17 +897,6 @@ const formatDate = (dateString) => {
 
 // Initialize component
 onMounted(() => {
-  // ---
-  // Store a dummy token for demonstration purposes.
-  // In a real application, you would do this after a successful login.
-  // For example:
-  // if (loginSuccess) {
-  //   localStorage.setItem('authToken', 'your-actual-jwt-token');
-  // }
-  // ---
-  const dummyToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-  localStorage.setItem('authToken', dummyToken)
 
   fetchArticles()
 })

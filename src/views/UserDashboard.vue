@@ -345,8 +345,9 @@
                   <input
                     v-model.number="reportForm.tax"
                     type="number"
+                    disabled
                     placeholder="0"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
                     @input="calculateAfterTax"
                   />
                   <p class="text-xs text-gray-500 mt-1">{{ formatRupiah(reportForm.tax) }}</p>
@@ -442,6 +443,7 @@ const selectedData = reactive({
   subtitle: null,
   account: null,
   supporter: null,
+  is_taxed: false, // Tambahkan properti is_taxed
 })
 
 const reportForm = reactive({
@@ -615,18 +617,30 @@ const fetchReports = async () => {
 
 const selectProgram = () => {
   if (selectedData.program) {
+    selectedData.is_taxed = selectedData.program.is_taxed
+    
+    // Reset selections for the next levels
     selectedData.action = null
     selectedData.subAction = null
     selectedData.activity = null
     selectedData.subtitle = null
     selectedData.account = null
+    
+    // Clear next level data
     actions.value = []
     subActions.value = []
     activities.value = []
     subtitles.value = []
     accounts.value = []
+    
+    // Recalculate tax
+    calculateTotal()
+    
     fetchActions()
     showSuccess(`Program "${selectedData.program.name}" berhasil dipilih`)
+  } else {
+    selectedData.is_taxed = false
+    calculateTotal()
   }
 }
 
@@ -718,9 +732,16 @@ const createReport = async () => {
 }
 
 const calculateTotal = () => {
-  reportForm.total_price =
-    reportForm.price * reportForm.first_volume * reportForm.second_volume * reportForm.third_volume
-  calculateAfterTax()
+  const volumes = reportForm.first_volume * reportForm.second_volume * reportForm.third_volume;
+  reportForm.total_price = reportForm.price * volumes;
+
+  // Auto-calculate tax if the selected program is taxed
+  if (selectedData.is_taxed) {
+    reportForm.tax = Math.round(reportForm.total_price * 0.12);
+  } else {
+    reportForm.tax = 0;
+  }
+  calculateAfterTax();
 }
 
 const calculateAfterTax = () => {
@@ -770,7 +791,6 @@ onMounted(() => {
   fetchReports()
 })
 </script>
-
 <style scoped>
 input:focus,
 textarea:focus,

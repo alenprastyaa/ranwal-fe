@@ -70,13 +70,21 @@
               <div class="font-medium text-gray-800">{{ pengampu.name }}</div>
               <div class="text-sm text-gray-500">ID: {{ pengampu.id }}</div>
             </div>
-            <button
-              @click="confirmDelete(pengampu)"
-              :disabled="deletingIds.includes(pengampu.id)"
-              class="bg-red-600 text-white px-3 py-1 rounded-full text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
-            >
-              {{ deletingIds.includes(pengampu.id) ? 'Menghapus...' : 'Hapus' }}
-            </button>
+            <div class="flex space-x-2">
+              <button
+                @click="startEdit(pengampu)"
+                class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-700 transition duration-200"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDelete(pengampu)"
+                :disabled="deletingIds.includes(pengampu.id)"
+                class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
+              >
+                {{ deletingIds.includes(pengampu.id) ? 'Menghapus...' : 'Hapus' }}
+              </button>
+            </div>
           </li>
         </ul>
 
@@ -99,6 +107,36 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="bg-white rounded-lg p-6 w-full max-w-sm shadow-xl transform transition-all">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Edit Pengampu</h2>
+        <form @submit.prevent="updatePengampu" class="space-y-4">
+          <input
+            v-model="editedName"
+            type="text"
+            placeholder="Nama pengampu"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex justify-end space-x-2 mt-4">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -127,6 +165,11 @@ const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
 
+// Edit modal states
+const showEditModal = ref(false)
+const editPengampu = ref(null)
+const editedName = ref('')
+
 let searchTimeout = null
 
 // Fetch pengampus
@@ -143,7 +186,7 @@ const fetchPengampus = async () => {
       params,
     })
     pengampus.value = res.data.data || []
-    totalPages.value = Math.ceil((res.data.total || 0) / limit)
+    totalPages.value = res.data.filter ? res.data.filter.total_page : 1
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -196,6 +239,60 @@ const createPengampu = async () => {
   }
 }
 
+// Start edit process
+const startEdit = (pengampu) => {
+  editPengampu.value = pengampu
+  editedName.value = pengampu.name
+  showEditModal.value = true
+}
+
+// Update pengampu
+const updatePengampu = async () => {
+  if (!editPengampu.value || !editedName.value) {
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Input Tidak Lengkap',
+      text: 'Nama pengampu tidak boleh kosong.',
+    })
+  }
+
+  try {
+    await axios.put(
+      `${baseUrl}/api/supporter/${editPengampu.value.id}/update`,
+      {
+        name: editedName.value,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Pengampu berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    cancelEdit()
+    fetchPengampus()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui pengampu.',
+    })
+  }
+}
+
+// Cancel edit
+const cancelEdit = () => {
+  showEditModal.value = false
+  editPengampu.value = null
+  editedName.value = ''
+}
+
 // Delete pengampu with confirmation
 const confirmDelete = async (pengampu) => {
   const result = await Swal.fire({
@@ -241,7 +338,7 @@ const deletePengampu = async (pengampuId) => {
 
 // Helper functions
 const changePage = (page) => {
-  if (page >= 1 && page >= totalPages.value) {
+  if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page
     fetchPengampus()
   }

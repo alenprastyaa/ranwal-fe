@@ -3,7 +3,6 @@
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4 text-gray-800">Tambah Aktivitas</h2>
       <form @submit.prevent="createActivity" class="space-y-4">
-        <!-- Dropdown Sub Kegiatan (full width di atas) -->
         <select
           v-model="selectedSubActionId"
           class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200"
@@ -15,7 +14,6 @@
           </option>
         </select>
 
-        <!-- Input + Tombol (dijajar) -->
         <div class="flex flex-col md:flex-row md:space-x-3 space-y-3 md:space-y-0">
           <input
             v-model="activityName"
@@ -95,13 +93,21 @@
                 Sub Kegiatan: {{ getSubActionName(activity.sub_action_id) }}
               </div>
             </div>
-            <button
-              @click="confirmDelete(activity)"
-              :disabled="deletingIds.includes(activity.id)"
-              class="bg-red-600 text-white px-3 py-1 rounded-full text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
-            >
-              {{ deletingIds.includes(activity.id) ? 'Menghapus...' : 'Hapus' }}
-            </button>
+            <div class="flex space-x-2">
+              <button
+                @click="startEdit(activity)"
+                class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-700 transition duration-200"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDelete(activity)"
+                :disabled="deletingIds.includes(activity.id)"
+                class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
+              >
+                {{ deletingIds.includes(activity.id) ? 'Menghapus...' : 'Hapus' }}
+              </button>
+            </div>
           </li>
         </ul>
 
@@ -124,6 +130,46 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl transform transition-all">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Edit Aktivitas</h2>
+        <form @submit.prevent="updateActivity" class="space-y-4">
+          <select
+            v-model="editedSubActionId"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Pilih Sub Kegiatan</option>
+            <option v-for="subAction in subActions" :key="subAction.id" :value="subAction.id">
+              {{ subAction.name }}
+            </option>
+          </select>
+          <input
+            v-model="editedName"
+            type="text"
+            placeholder="Nama aktivitas"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex justify-end space-x-2 mt-4">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -154,6 +200,12 @@ const limit = 5
 const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
+
+// Edit modal states
+const showEditModal = ref(false)
+const editActivity = ref(null)
+const editedName = ref('')
+const editedSubActionId = ref('')
 
 let searchTimeout = null
 
@@ -189,7 +241,7 @@ const fetchActivities = async () => {
       params,
     })
     activities.value = res.data.data || []
-    totalPages.value = Math.ceil((res.data.total || 0) / limit)
+    totalPages.value = res.data.filter ? res.data.filter.total_page : 1
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -242,6 +294,63 @@ const createActivity = async () => {
   } finally {
     isCreating.value = false
   }
+}
+
+// Start edit process
+const startEdit = (activity) => {
+  editActivity.value = activity
+  editedName.value = activity.name
+  editedSubActionId.value = activity.sub_action_id
+  showEditModal.value = true
+}
+
+// Update activity
+const updateActivity = async () => {
+  if (!editActivity.value || !editedName.value || !editedSubActionId.value) {
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Input Tidak Lengkap',
+      text: 'Harap lengkapi semua bidang.',
+    })
+  }
+
+  try {
+    await axios.put(
+      `${baseUrl}/api/activity/${editActivity.value.id}/update`,
+      {
+        name: editedName.value,
+        sub_action_id: editedSubActionId.value,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Aktivitas berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    cancelEdit()
+    fetchActivities()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui aktivitas.',
+    })
+  }
+}
+
+// Cancel edit
+const cancelEdit = () => {
+  showEditModal.value = false
+  editActivity.value = null
+  editedName.value = ''
+  editedSubActionId.value = ''
 }
 
 // Delete activity with confirmation

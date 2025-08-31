@@ -73,13 +73,21 @@
                 Kegiatan: {{ getActionName(subAction.action_id) }}
               </div>
             </div>
-            <button
-              @click="confirmDelete(subAction)"
-              :disabled="deletingIds.includes(subAction.id)"
-              class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
-            >
-              {{ deletingIds.includes(subAction.id) ? 'Menghapus...' : 'Hapus' }}
-            </button>
+            <div class="flex space-x-2">
+              <button
+                @click="startEdit(subAction)"
+                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDelete(subAction)"
+                :disabled="deletingIds.includes(subAction.id)"
+                class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                {{ deletingIds.includes(subAction.id) ? 'Menghapus...' : 'Hapus' }}
+              </button>
+            </div>
           </li>
         </ul>
 
@@ -102,6 +110,46 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
+        <h2 class="text-xl font-semibold mb-4">Edit Sub Kegiatan</h2>
+        <form @submit.prevent="updateSubAction" class="space-y-4">
+          <select
+            v-model="editedActionId"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Pilih Kegiatan</option>
+            <option v-for="action in actions" :key="action.id" :value="action.id">
+              {{ action.name }}
+            </option>
+          </select>
+          <input
+            v-model="editedName"
+            type="text"
+            placeholder="Nama sub kegiatan"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -132,6 +180,12 @@ const limit = 5
 const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
+
+// Edit modal states
+const showEditModal = ref(false)
+const editSubAction = ref(null)
+const editedName = ref('')
+const editedActionId = ref('')
 
 let searchTimeout = null
 
@@ -169,7 +223,7 @@ const fetchSubActions = async () => {
     })
 
     subActions.value = res.data.data || []
-    totalPages.value = Math.ceil((res.data.total || 0) / limit)
+    totalPages.value = res.data.filter ? res.data.filter.total_page : 1;
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -218,6 +272,57 @@ const createSubAction = async () => {
   } finally {
     isCreating.value = false
   }
+}
+
+// Start edit process
+const startEdit = (subAction) => {
+  editSubAction.value = subAction
+  editedName.value = subAction.name
+  editedActionId.value = subAction.action_id
+  showEditModal.value = true
+}
+
+// Update sub action
+const updateSubAction = async () => {
+  if (!editSubAction.value || !editedName.value || !editedActionId.value) return
+
+  try {
+    await axios.put(
+      `${baseUrl}/api/sub-action/${editSubAction.value.id}/update`,
+      {
+        name: editedName.value,
+        action_id: editedActionId.value,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Sub kegiatan berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    cancelEdit()
+    fetchSubActions()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui sub kegiatan.',
+    })
+  }
+}
+
+// Cancel edit
+const cancelEdit = () => {
+  showEditModal.value = false
+  editSubAction.value = null
+  editedName.value = ''
+  editedActionId.value = ''
 }
 
 // Delete sub action with confirmation
