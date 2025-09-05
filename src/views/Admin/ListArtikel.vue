@@ -428,7 +428,7 @@
                 <option value="Kegiatan Rutin">Kegiatan Rutin</option>
               </select>
             </div>
-            ======= >>>>>>> 4acd12044e27959f8bb5f375ec826a67da41225f
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Status <span class="text-red-500">*</span>
