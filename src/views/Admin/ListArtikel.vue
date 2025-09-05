@@ -1,10 +1,8 @@
+```vue
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
-    <!-- Header -->
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-800 mb-4">Manajemen Artikel</h1>
-
-      <!-- Search Bar -->
       <div class="flex justify-between items-center">
         <div class="relative">
           <input
@@ -28,7 +26,6 @@
             ></path>
           </svg>
         </div>
-
         <button
           @click="refreshData"
           :disabled="loading"
@@ -38,14 +35,10 @@
         </button>
       </div>
     </div>
-
-    <!-- Loading State -->
     <div v-if="loading" class="flex justify-center items-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       <span class="ml-2 text-gray-600">Memuat data...</span>
     </div>
-
-    <!-- Error State -->
     <div
       v-else-if="error"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
@@ -53,8 +46,6 @@
       <p>{{ error }}</p>
       <button @click="fetchArticles" class="mt-2 text-sm underline">Coba lagi</button>
     </div>
-
-    <!-- Table -->
     <div v-else class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -69,6 +60,11 @@
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
               >
                 Author
+              </th>
+              <th
+                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+              >
+                Category
               </th>
               <th
                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -94,7 +90,6 @@
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
             <tr v-for="article in articles" :key="article.id" class="hover:bg-gray-50">
-              <!-- Article Info -->
               <td class="px-6 py-4">
                 <div class="flex items-start space-x-3">
                   <div class="flex-shrink-0">
@@ -142,13 +137,12 @@
                   </div>
                 </div>
               </td>
-
-              <!-- Author -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ article.name }}
               </td>
-
-              <!-- Status -->
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {{ article.category }}
+              </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
@@ -161,18 +155,12 @@
                   {{ article.status }}
                 </span>
               </td>
-
-              <!-- Views -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatNumber(article.views_count) }}
               </td>
-
-              <!-- Date -->
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(article.created_at) }}
               </td>
-
-              <!-- Actions -->
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button
@@ -209,14 +197,26 @@
                       ></path>
                     </svg>
                   </button>
+                  <button
+                    @click="deleteArticle(article)"
+                    class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50"
+                    title="Hapus"
+                  >
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m4-12v12m-7-4h8"
+                      ></path>
+                    </svg>
+                  </button>
                 </div>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <!-- Empty State -->
       <div v-if="!loading && articles.length === 0" class="text-center py-8">
         <svg
           class="mx-auto h-12 w-12 text-gray-400"
@@ -240,8 +240,6 @@
           }}
         </p>
       </div>
-
-      <!-- Pagination -->
       <div v-if="filter.total_page > 1" class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
         <div class="flex items-center justify-between">
           <div class="flex-1 flex justify-between sm:hidden">
@@ -289,7 +287,6 @@
                     ></path>
                   </svg>
                 </button>
-
                 <button
                   v-for="page in getPageNumbers()"
                   :key="page"
@@ -302,7 +299,6 @@
                 >
                   {{ page }}
                 </button>
-
                 <button
                   @click="changePage(currentPage + 1)"
                   :disabled="currentPage >= filter.total_page"
@@ -322,8 +318,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Edit Modal -->
     <div
       v-if="showEditModal"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
@@ -349,9 +343,7 @@
               </svg>
             </button>
           </div>
-
           <form @submit.prevent="updateArticle" class="space-y-6">
-            <!-- Title -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Judul Artikel <span class="text-red-500">*</span>
@@ -365,8 +357,6 @@
                 :disabled="updating"
               />
             </div>
-
-            <!-- Content -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Konten </label>
               <textarea
@@ -380,8 +370,6 @@
                 Anda dapat menggunakan HTML tags untuk formatting
               </p>
             </div>
-
-            <!-- Cover Image -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Cover Image URL </label>
               <input
@@ -391,7 +379,6 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 :disabled="updating"
               />
-              <!-- Image Preview -->
               <div v-if="editForm.cover_image" class="mt-2">
                 <img
                   :src="editForm.cover_image"
@@ -401,8 +388,27 @@
                 />
               </div>
             </div>
-
-            <!-- Status -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Kategori <span class="text-red-500">*</span>
+              </label>
+              <select
+                v-model="editForm.category"
+                required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                :disabled="updating"
+              >
+                <option value="" disabled>Pilih kategori</option>
+                <option value="Tindak Lanjut Hasil Musrenbang">
+                  Tindak Lanjut Hasil Musrenbang
+                </option>
+                <option value="Usulan Reses DPRD">Usulan Reses DPRD</option>
+                <option value="Usulan Langsung Warga Masyarakat">
+                  Usulan Langsung Warga Masyarakat
+                </option>
+                <option value="Kegiatan Rutin">Kegiatan Rutin</option>
+              </select>
+            </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Status <span class="text-red-500">*</span>
@@ -418,8 +424,6 @@
                 <option value="archived">Archived</option>
               </select>
             </div>
-
-            <!-- Tags -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"> Tags </label>
               <div class="space-y-2">
@@ -457,8 +461,6 @@
                 <p class="text-xs text-gray-500">Tekan Enter untuk menambah tag</p>
               </div>
             </div>
-
-            <!-- Form Actions -->
             <div class="flex justify-end space-x-3 pt-4 border-t">
               <button
                 type="button"
@@ -470,7 +472,9 @@
               </button>
               <button
                 type="submit"
-                :disabled="updating || !editForm.title.trim() || !editForm.status"
+                :disabled="
+                  updating || !editForm.title.trim() || !editForm.status || !editForm.category
+                "
                 class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
               >
                 {{ updating ? 'Menyimpan...' : 'Simpan Perubahan' }}
@@ -480,8 +484,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Success/Error Messages -->
     <div
       v-if="message.text"
       :class="{
@@ -530,10 +532,10 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 
-// Reactive state
 const articles = ref([])
 const loading = ref(false)
 const error = ref('')
@@ -545,8 +547,6 @@ const filter = ref({
   filtered_result: 0,
   total_result: 0,
 })
-
-// Edit modal state
 const showEditModal = ref(false)
 const updating = ref(false)
 const selectedArticle = ref(null)
@@ -556,31 +556,21 @@ const editForm = reactive({
   cover_image: '',
   tags: [],
   status: 'published',
+  category: '',
 })
-
-// Tag management
 const newTag = ref('')
 const imageError = ref(false)
-
-// Message state
 const message = reactive({
   text: '',
   type: 'success',
 })
-
-// API Base URL
 const API_BASE_URL = 'https://bitwisi.cloud/ranwal/api'
-
-// Debounce timer
 let searchTimer = null
 
-// ---
-// Function to get the auth token from localStorage
 const getAuthToken = () => {
   return localStorage.getItem('token')
 }
 
-// Function to create headers with the authorization token
 const createHeaders = () => {
   const token = getAuthToken()
   const headers = {
@@ -591,27 +581,26 @@ const createHeaders = () => {
   }
   return headers
 }
-// ---
 
-// Fetch articles from API
 const fetchArticles = async () => {
   loading.value = true
   error.value = ''
-
   try {
     const params = new URLSearchParams({
       page: currentPage.value,
       limit: 5,
       search: searchQuery.value,
     })
-
     const response = await fetch(`${API_BASE_URL}/article/list?${params}`, {
       headers: createHeaders(),
     })
     const data = await response.json()
-
     if (data.status === 200) {
-      articles.value = data.data || []
+      articles.value =
+        data.data.map((article) => ({
+          ...article,
+          category: article.category || '',
+        })) || []
       filter.value = data.filter || {}
     } else {
       throw new Error(data.message || 'Gagal mengambil data artikel')
@@ -624,7 +613,6 @@ const fetchArticles = async () => {
   }
 }
 
-// Debounced search
 const debouncedSearch = () => {
   clearTimeout(searchTimer)
   searchTimer = setTimeout(() => {
@@ -633,7 +621,6 @@ const debouncedSearch = () => {
   }, 500)
 }
 
-// Change page
 const changePage = (page) => {
   if (page >= 1 && page <= filter.value.total_page) {
     currentPage.value = page
@@ -641,16 +628,12 @@ const changePage = (page) => {
   }
 }
 
-// Get page numbers for pagination
 const getPageNumbers = () => {
   const pages = []
   const totalPages = filter.value.total_page
   const current = currentPage.value
-
   if (totalPages <= 7) {
-    for (let i = 1; i <= totalPages; i++) {
-      pages.push(i)
-    }
+    for (let i = 1; i <= totalPages; i++) pages.push(i)
   } else {
     if (current <= 4) {
       for (let i = 1; i <= 5; i++) pages.push(i)
@@ -668,11 +651,9 @@ const getPageNumbers = () => {
       pages.push(totalPages)
     }
   }
-
   return pages.filter((p) => p !== '...')
 }
 
-// View article
 const viewArticle = async (article) => {
   try {
     loading.value = true
@@ -680,14 +661,9 @@ const viewArticle = async (article) => {
       headers: createHeaders(),
     })
     const data = await response.json()
-
     if (data.status === 200) {
-      // You can implement view logic here - maybe open in new tab or show detailed modal
       showMessage('Detail artikel berhasil dimuat', 'success')
       console.log('Full Article data:', data.data)
-
-      // Example: Open in new window or navigate to detail page
-      // window.open(`/articles/${article.slug}`, '_blank')
     } else {
       throw new Error(data.message || 'Gagal mengambil detail artikel')
     }
@@ -698,26 +674,21 @@ const viewArticle = async (article) => {
   }
 }
 
-// Open edit modal and fetch full article data
 const editArticle = async (article) => {
   try {
-    // Fetch full article data first
     const response = await fetch(`${API_BASE_URL}/article/${article.slug}/get`, {
       headers: createHeaders(),
     })
     const data = await response.json()
-
     if (data.status === 200) {
       const fullArticle = data.data
       selectedArticle.value = fullArticle
-
-      // Populate form with full data
       editForm.title = fullArticle.title || ''
       editForm.content = fullArticle.content || ''
       editForm.cover_image = fullArticle.cover_image || ''
       editForm.tags = [...(fullArticle.tags || [])]
       editForm.status = fullArticle.status || 'published'
-
+      editForm.category = fullArticle.category || ''
       showEditModal.value = true
     } else {
       throw new Error(data.message || 'Gagal mengambil detail artikel')
@@ -727,7 +698,28 @@ const editArticle = async (article) => {
   }
 }
 
-// Close edit modal
+const deleteArticle = async (article) => {
+  if (!confirm(`Apakah Anda yakin ingin menghapus artikel "${article.title}"?`)) return
+  try {
+    loading.value = true
+    const response = await fetch(`${API_BASE_URL}/article/${article.slug}/delete`, {
+      method: 'DELETE',
+      headers: createHeaders(),
+    })
+    const data = await response.json()
+    if (data.status === 200) {
+      articles.value = articles.value.filter((a) => a.id !== article.id)
+      showMessage('Artikel berhasil dihapus', 'success')
+    } else {
+      throw new Error(data.message || 'Gagal menghapus artikel')
+    }
+  } catch (err) {
+    showMessage(err.message || 'Terjadi kesalahan saat menghapus artikel', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
 const closeEditModal = () => {
   showEditModal.value = false
   selectedArticle.value = null
@@ -736,11 +728,11 @@ const closeEditModal = () => {
   editForm.cover_image = ''
   editForm.tags = []
   editForm.status = 'published'
+  editForm.category = ''
   newTag.value = ''
   imageError.value = false
 }
 
-// Add tag
 const addTag = () => {
   const tag = newTag.value.trim()
   if (tag && !editForm.tags.includes(tag)) {
@@ -749,17 +741,16 @@ const addTag = () => {
   }
 }
 
-// Remove tag
 const removeTag = (index) => {
   editForm.tags.splice(index, 1)
 }
 
-// Update article
 const updateArticle = async () => {
-  if (!selectedArticle.value || !editForm.title.trim() || !editForm.status) return
-
+  if (!selectedArticle.value || !editForm.title.trim() || !editForm.status || !editForm.category) {
+    showMessage('Judul, Kategori, dan Status wajib diisi.', 'error')
+    return
+  }
   updating.value = true
-
   try {
     const requestBody = {
       title: editForm.title.trim(),
@@ -767,18 +758,15 @@ const updateArticle = async () => {
       cover_image: editForm.cover_image.trim(),
       tags: editForm.tags,
       status: editForm.status,
+      category: editForm.category,
     }
-
     const response = await fetch(`${API_BASE_URL}/article/${selectedArticle.value.slug}/update`, {
       method: 'PUT',
       headers: createHeaders(),
       body: JSON.stringify(requestBody),
     })
-
     const data = await response.json()
-
     if (data.status === 200) {
-      // Update the article in the list
       const index = articles.value.findIndex((a) => a.id === selectedArticle.value.id)
       if (index !== -1) {
         articles.value[index] = {
@@ -787,14 +775,11 @@ const updateArticle = async () => {
           cover_image: editForm.cover_image.trim(),
           status: editForm.status,
           tags: [...editForm.tags],
+          category: editForm.category,
         }
       }
-
       showMessage('Artikel berhasil diperbarui', 'success')
       closeEditModal()
-
-      // Optionally refresh the list to get latest data
-      // fetchArticles()
     } else {
       throw new Error(data.message || 'Gagal memperbarui artikel')
     }
@@ -805,33 +790,27 @@ const updateArticle = async () => {
   }
 }
 
-// Show message
 const showMessage = (text, type = 'success') => {
   message.text = text
   message.type = type
-
   setTimeout(() => {
     clearMessage()
   }, 5000)
 }
 
-// Clear message
 const clearMessage = () => {
   message.text = ''
   message.type = 'success'
 }
 
-// Refresh data
 const refreshData = () => {
   fetchArticles()
 }
 
-// Format number
 const formatNumber = (num) => {
-  return parseInt(num).toLocaleString('id-ID')
+  return parseInt(num, 10).toLocaleString('id-ID')
 }
 
-// Format date
 const formatDate = (dateString) => {
   const date = new Date(dateString)
   return date.toLocaleDateString('id-ID', {
@@ -841,20 +820,8 @@ const formatDate = (dateString) => {
   })
 }
 
-// Initialize component
 onMounted(() => {
-  // ---
-  // Store a dummy token for demonstration purposes.
-  // In a real application, you would do this after a successful login.
-  // For example:
-  // if (loginSuccess) {
-  //   localStorage.setItem('authToken', 'your-actual-jwt-token');
-  // }
-  // ---
-  const dummyToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c'
-  localStorage.setItem('authToken', dummyToken)
-
   fetchArticles()
 })
 </script>
+```

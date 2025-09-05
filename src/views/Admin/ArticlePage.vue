@@ -22,6 +22,38 @@
           </div>
 
           <div>
+            <label for="category" class="block text-sm font-semibold text-gray-700 mb-2">
+              Kategori *
+            </label>
+            <select
+              id="category"
+              v-model="formData.category"
+              required
+              class="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors duration-200 appearance-none"
+            >
+              <option disabled value="">Pilih Kategori</option>
+              <option value="Tindak Lanjut Hasil Musrenbang">Tindak Lanjut Hasil Musrenbang</option>
+              <option value="Usulan Reses DPRD">Usulan Reses DPRD</option>
+              <option value="Usulan Langsung Warga Masyarakat">
+                Usulan Langsung Warga Masyarakat
+              </option>
+              <option value="Kegiatan Rutin">Kegiatan Rutin</option>
+            </select>
+            <div
+              class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700"
+            >
+              <svg
+                class="fill-current h-4 w-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M9.293 12.95l.707.707L15.646 7.354a.5.5 0 00-.708-.708L10 11.293 4.354 6.646a.5.5 0 00-.708.708l5.793 5.793z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div>
             <label class="block text-sm font-semibold text-gray-700 mb-2"> Gambar Sampul </label>
 
             <div class="mb-4">
@@ -475,6 +507,7 @@ const formData = ref({
   cover_image: '',
   tags: [],
   status: 'published',
+  category: '', // Ditambahkan field category
 })
 
 const newTag = ref('')
@@ -663,6 +696,12 @@ const handleSubmit = async () => {
     return
   }
 
+  // Validasi tambahan untuk kategori
+  if (!formData.value.category) {
+    submitMessage.value = 'Error: Kategori wajib dipilih'
+    return
+  }
+
   isSubmitting.value = true
   submitMessage.value = ''
 
@@ -704,6 +743,7 @@ const handleCancel = () => {
     cover_image: '',
     tags: [],
     status: 'published',
+    category: '', // Reset field category juga
   }
   newTag.value = ''
   submitMessage.value = ''

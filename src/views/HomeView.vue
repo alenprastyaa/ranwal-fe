@@ -1,6 +1,5 @@
 <template>
   <div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-    <!-- Header -->
     <header class="bg-white shadow-lg border-b-2 border-blue-100 sticky top-0 z-50">
       <div class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
         <div class="flex items-center justify-between">
@@ -12,20 +11,80 @@
             />
             <h1 class="text-xl sm:text-2xl md:text-3xl font-bold bg-clip-text">SIREMON</h1>
           </div>
-          <nav class="flex">
+
+          <nav class="hidden md:flex items-center space-x-4">
             <router-link
               to="/login"
               href="#"
-              class="bg-blue-900 px-2 py-1 text-white text-sm sm:text-base rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
+              class="bg-blue-900 px-3 py-2 text-white text-base rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
               >Sign In</router-link
             >
           </nav>
+
+          <div class="md:hidden flex items-center space-x-3">
+            <div class="relative inline-block text-left">
+              <button
+                type="button"
+                class="inline-flex justify-center items-center px-2 py-1 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                @click="toggleCategoryMenu"
+              >
+                <svg
+                  class="w-4 h-4 mr-1"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+                {{ selectedCategory || 'Semua Katogori' }}
+              </button>
+
+              <div
+                v-if="showCategoryMenu"
+                class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50 py-1"
+                role="menu"
+                aria-orientation="vertical"
+              >
+                <a
+                  href="#"
+                  @click.prevent="selectCategory(null)"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100"
+                  :class="
+                    selectedCategory === null
+                      ? 'text-blue-600 bg-blue-50 font-medium'
+                      : 'text-gray-700'
+                  "
+                  role="menuitem"
+                >
+                  Semua Katogori
+                </a>
+                <a
+                  v-for="category in categories"
+                  :key="category"
+                  href="#"
+                  @click.prevent="selectCategory(category)"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100"
+                  :class="
+                    selectedCategory === category
+                      ? 'text-blue-600 bg-blue-50 font-medium'
+                      : 'text-gray-700'
+                  "
+                  role="menuitem"
+                >
+                  {{ category }}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
-      <!-- Article Detail View -->
       <div v-if="selectedArticle" class="mb-6 sm:mb-8">
         <button
           @click="selectedArticle = null"
@@ -48,9 +107,7 @@
         </button>
 
         <article class="bg-white rounded-xl sm:rounded-2xl shadow-xl overflow-hidden">
-          <!-- Cover Image Section - Mobile Optimized -->
           <div class="relative">
-            <!-- Main Cover Image -->
             <div
               v-if="selectedArticle.cover_image && !imageError"
               class="h-48 sm:h-64 md:h-80 lg:h-96 relative overflow-hidden"
@@ -64,7 +121,6 @@
                 loading="lazy"
               />
 
-              <!-- Loading overlay -->
               <div
                 v-if="imageLoading"
                 class="absolute inset-0 bg-gray-200 flex items-center justify-center"
@@ -77,13 +133,11 @@
                 </div>
               </div>
 
-              <!-- Gradient overlay -->
               <div
                 class="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent"
               ></div>
             </div>
 
-            <!-- Fallback when no image or error -->
             <div
               v-else
               class="h-48 sm:h-64 md:h-80 lg:h-96 bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600 flex items-center justify-center relative"
@@ -115,10 +169,8 @@
             </div>
           </div>
 
-          <!-- Article Content -->
           <div class="p-4 sm:p-6 lg:p-8">
             <div class="mb-4 sm:mb-6">
-              <!-- Tags -->
               <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-4 sm:mb-6">
                 <span
                   v-for="tag in selectedArticle.tags"
@@ -129,14 +181,39 @@
                 </span>
               </div>
 
-              <!-- Title -->
+              <div
+                v-if="selectedArticle.category"
+                class="flex items-center mb-4 sm:mb-6 text-sm sm:text-base text-blue-600 font-medium"
+              >
+                <svg
+                  class="w-4 h-4 sm:w-5 sm:h-5 mr-2"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2 2z"
+                  ></path>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 15L12 11L16 15"
+                  ></path>
+                </svg>
+                {{ selectedArticle.category }}
+              </div>
+
               <h1
                 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4 sm:mb-6 leading-tight"
               >
                 {{ selectedArticle.title }}
               </h1>
 
-              <!-- Meta Information -->
               <div
                 class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center text-gray-600 text-xs sm:text-sm gap-3 sm:gap-6 mb-6 sm:mb-8"
               >
@@ -198,7 +275,6 @@
               </div>
             </div>
 
-            <!-- Article Content -->
             <div
               class="prose prose-sm sm:prose-base lg:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-p:leading-relaxed prose-a:text-blue-600 prose-strong:text-gray-900 prose-blockquote:border-blue-300 prose-blockquote:bg-blue-50 prose-blockquote:p-4 prose-blockquote:rounded-lg mobile-prose"
               v-html="selectedArticle.content"
@@ -207,11 +283,29 @@
         </article>
       </div>
 
-      <!-- Articles List View -->
       <div v-else>
-        <!-- Search Bar -->
-        <div class="mb-6 sm:mb-8">
-          <div class="relative w-full sm:max-w-md">
+        <!-- Current filter indicator -->
+        <div v-if="selectedCategory" class="mb-4 flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Showing articles for:</span>
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800"
+          >
+            {{ selectedCategory }}
+            <button @click="selectCategory(null)" class="ml-2 hover:text-blue-600">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                ></path>
+              </svg>
+            </button>
+          </span>
+        </div>
+
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8">
+          <div class="relative w-full sm:max-w-md mb-4 sm:mb-0">
             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
                 class="h-4 w-4 sm:h-5 sm:w-5 text-gray-400"
@@ -235,9 +329,79 @@
               placeholder="Search articles..."
             />
           </div>
+
+          <div class="hidden sm:block relative inline-block text-left w-full sm:w-auto">
+            <div>
+              <button
+                type="button"
+                class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                id="menu-button"
+                aria-expanded="true"
+                aria-haspopup="true"
+                @click="toggleCategoryMenu"
+              >
+                {{ selectedCategory || 'Semua Katogori' }}
+                <svg
+                  class="-mr-1 ml-2 h-5 w-5"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                    clip-rule="evenodd"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <div
+              v-if="showCategoryMenu"
+              class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50"
+              role="menu"
+              aria-orientation="vertical"
+              aria-labelledby="menu-button"
+              tabindex="-1"
+            >
+              <div class="py-1" role="none">
+                <a
+                  href="#"
+                  @click.prevent="selectCategory(null)"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+                  :class="
+                    selectedCategory === null
+                      ? 'text-blue-600 bg-blue-50 font-medium'
+                      : 'text-gray-700'
+                  "
+                  role="menuitem"
+                  tabindex="-1"
+                  id="menu-item-0"
+                >
+                  Semua Katogori
+                </a>
+                <a
+                  v-for="category in categories"
+                  :key="category"
+                  href="#"
+                  @click.prevent="selectCategory(category)"
+                  class="block px-4 py-2 text-sm hover:bg-gray-100 hover:text-gray-900"
+                  :class="
+                    selectedCategory === category
+                      ? 'text-blue-600 bg-blue-50 font-medium'
+                      : 'text-gray-700'
+                  "
+                  role="menuitem"
+                  tabindex="-1"
+                >
+                  {{ category }}
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <!-- Loading State -->
         <div v-if="loading" class="text-center py-8 sm:py-12">
           <div
             class="inline-block animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-blue-600"
@@ -245,7 +409,6 @@
           <p class="mt-4 text-gray-600 text-sm sm:text-base">Loading articles...</p>
         </div>
 
-        <!-- Error State -->
         <div v-else-if="error" class="text-center py-8 sm:py-12 px-4">
           <div
             class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center"
@@ -276,8 +439,22 @@
           </button>
         </div>
 
-        <!-- Articles Grid -->
         <div v-else-if="articles.length > 0" class="space-y-6 sm:space-y-8">
+          <!-- Results info -->
+          <div class="text-sm text-gray-600 mb-4">
+            <span v-if="searchQuery && selectedCategory">
+              Found {{ pagination.filtered_result }} articles for "{{ searchQuery }}" in
+              {{ selectedCategory }}
+            </span>
+            <span v-else-if="searchQuery">
+              Found {{ pagination.filtered_result }} articles for "{{ searchQuery }}"
+            </span>
+            <span v-else-if="selectedCategory">
+              Showing {{ pagination.filtered_result }} articles in {{ selectedCategory }}
+            </span>
+            <span v-else> Showing all {{ pagination.total_result }} articles </span>
+          </div>
+
           <div class="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             <article
               v-for="article in articles"
@@ -285,7 +462,6 @@
               class="bg-white rounded-xl sm:rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 sm:hover:-translate-y-2 overflow-hidden cursor-pointer group"
               @click="viewArticle(article.slug)"
             >
-              <!-- Article Card Image -->
               <div class="h-40 sm:h-48 relative overflow-hidden">
                 <img
                   v-if="article.cover_image && !cardImageErrors.has(article.id)"
@@ -295,7 +471,6 @@
                   @error="(e) => handleCardImageError(e, article.id)"
                   loading="lazy"
                 />
-                <!-- Fallback for card images -->
                 <div
                   v-else
                   class="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600 group-hover:from-blue-600 group-hover:to-purple-700 transition-all duration-300 flex items-center justify-center"
@@ -323,7 +498,6 @@
               </div>
 
               <div class="p-4 sm:p-6">
-                <!-- Tags -->
                 <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-2 sm:mb-3">
                   <span
                     v-for="tag in article.tags.slice(0, 2)"
@@ -340,21 +514,34 @@
                   </span>
                 </div>
 
-                <!-- Title -->
+                <div v-if="article.category" class="mb-2 sm:mb-3 text-xs text-blue-600 font-medium">
+                  <svg
+                    class="w-3 h-3 inline-block mr-1"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  {{ article.category }}
+                </div>
+
                 <h2
                   class="text-base sm:text-lg lg:text-xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-200 leading-tight"
                 >
                   {{ article.title }}
                 </h2>
 
-                <!-- Excerpt -->
                 <p
                   class="text-gray-600 text-xs sm:text-sm mb-3 sm:mb-4 line-clamp-3 leading-relaxed"
                 >
                   {{ article.excerpt || 'No excerpt available' }}
                 </p>
 
-                <!-- Meta -->
                 <div
                   class="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs text-gray-500 space-y-2 sm:space-y-0"
                 >
@@ -380,7 +567,6 @@
             </article>
           </div>
 
-          <!-- Pagination -->
           <div v-if="pagination.total_page > 1" class="flex justify-center mt-8 sm:mt-12">
             <nav class="flex items-center space-x-1 sm:space-x-2">
               <button
@@ -420,7 +606,6 @@
           </div>
         </div>
 
-        <!-- Empty State -->
         <div v-else class="text-center py-8 sm:py-12 px-4">
           <div
             class="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center"
@@ -441,6 +626,12 @@
           </div>
           <h3 class="text-base sm:text-lg font-semibold text-gray-900 mb-2">No articles found</h3>
           <p class="text-gray-600 text-sm sm:text-base">
+            <span v-if="searchQuery && selectedCategory">
+              No articles found for "{{ searchQuery }}" in {{ selectedCategory }}.
+            </span>
+            <span v-else-if="searchQuery"> No articles found for "{{ searchQuery }}". </span>
+            <span v-else-if="selectedCategory"> No articles found in {{ selectedCategory }}. </span>
+            <span v-else> No articles available. </span>
             Try adjusting your search terms or check back later for new content.
           </p>
         </div>
@@ -450,7 +641,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, onUnmounted } from 'vue'
 
 // Reactive data
 const articles = ref([])
@@ -469,6 +660,17 @@ const pagination = ref({
   total_result: 0,
 })
 
+// Category state - Default null means show all articles
+const categories = ref([
+  'Tindak Lanjut Hasil Musrenbang',
+  'Usulan Reses DPRD',
+  'Usulan Langsung Warga Masyarakat',
+  'Kegiatan Rutin',
+])
+const selectedCategory = ref(null) // null = Semua Katogori (default)
+const showCategoryMenu = ref(false)
+const showMobileMenu = ref(false)
+
 // API base URL
 const API_BASE_URL = 'https://bitwisi.cloud/ranwal/api'
 
@@ -477,7 +679,6 @@ const onImageError = (event) => {
   console.error('Cover image failed to load:', selectedArticle.value?.cover_image)
   imageError.value = true
   imageLoading.value = false
-  // Hide the broken image
   event.target.style.display = 'none'
 }
 
@@ -490,25 +691,42 @@ const onImageLoad = (event) => {
 const handleCardImageError = (event, articleId) => {
   console.error('Card image failed to load for article:', articleId)
   cardImageErrors.value.add(articleId)
-  // Hide the broken image and show fallback
   event.target.style.display = 'none'
 }
 
-// Fetch articles from API
-const fetchArticles = async (page = 1, search = '') => {
+// Fetch articles from API with improved error handling
+const fetchArticles = async (page = 1) => {
   loading.value = true
   error.value = ''
 
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: '6',
+  })
+
+  // Add search query if exists
+  if (searchQuery.value.trim()) {
+    params.append('search', searchQuery.value.trim())
+  }
+
+  // Add category filter if selected (only if not null)
+  if (selectedCategory.value) {
+    params.append('category', selectedCategory.value)
+  }
+
   try {
-    const response = await fetch(
-      `${API_BASE_URL}/article/list?page=${page}&limit=6&search=${encodeURIComponent(search)}`,
-    )
+    const response = await fetch(`${API_BASE_URL}/article/list?${params}`)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
     const data = await response.json()
 
     if (data.status === 200) {
-      articles.value = data.data || []
+      articles.value = Array.isArray(data.data) ? data.data : []
       pagination.value = data.filter || {
-        current_page: 1,
+        current_page: page,
         total_page: 1,
         filtered_result: 0,
         total_result: 0,
@@ -518,9 +736,9 @@ const fetchArticles = async (page = 1, search = '') => {
       articles.value = []
     }
   } catch (err) {
-    error.value = 'Network error: Unable to connect to the server'
-    articles.value = []
     console.error('Fetch error:', err)
+    error.value = `Network error: ${err.message}`
+    articles.value = []
   } finally {
     loading.value = false
   }
@@ -535,11 +753,15 @@ const fetchArticle = async (slug) => {
 
   try {
     const response = await fetch(`${API_BASE_URL}/article/${slug}/get`)
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+
     const data = await response.json()
 
     if (data.status === 200) {
       selectedArticle.value = data.data
-      // Reset image states when new article is loaded
       imageLoading.value = !!data.data?.cover_image
       imageError.value = false
     } else {
@@ -547,9 +769,9 @@ const fetchArticle = async (slug) => {
       selectedArticle.value = null
     }
   } catch (err) {
-    error.value = 'Network error: Unable to connect to the server'
+    console.error('Fetch article error:', err)
+    error.value = `Network error: ${err.message}`
     selectedArticle.value = null
-    console.error('Fetch error:', err)
   } finally {
     loading.value = false
   }
@@ -557,8 +779,8 @@ const fetchArticle = async (slug) => {
 
 // View article detail
 const viewArticle = (slug) => {
+  if (!slug) return
   fetchArticle(slug)
-  // Scroll to top when viewing article
   window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 
@@ -567,27 +789,62 @@ let searchTimeout = null
 const searchArticles = () => {
   clearTimeout(searchTimeout)
   searchTimeout = setTimeout(() => {
-    fetchArticles(1, searchQuery.value)
+    fetchArticles(1) // Reset to first page when searching
   }, 300)
+}
+
+// Select category and refetch articles
+const selectCategory = (category) => {
+  selectedCategory.value = category
+  showCategoryMenu.value = false
+  showMobileMenu.value = false
+  fetchArticles(1) // Reset to first page when changing category
+}
+
+// Toggle category dropdown
+const toggleCategoryMenu = () => {
+  showCategoryMenu.value = !showCategoryMenu.value
+  if (showCategoryMenu.value) {
+    showMobileMenu.value = false
+  }
+}
+
+// Toggle mobile hamburger menu
+const toggleMobileMenu = () => {
+  showMobileMenu.value = !showMobileMenu.value
+  if (showMobileMenu.value) {
+    showCategoryMenu.value = false
+  }
+}
+
+// Close menus when clicking outside
+const closeMenus = (event) => {
+  const categoryMenu = event.target.closest('.relative.inline-block')
+  const mobileMenuButton = event.target.closest('[aria-controls="mobile-menu"]')
+
+  if (!categoryMenu) {
+    showCategoryMenu.value = false
+  }
+
+  if (!mobileMenuButton && !event.target.closest('.mobile-menu-content')) {
+    showMobileMenu.value = false
+  }
 }
 
 // Change page
 const changePage = (page) => {
-  if (page >= 1 && page <= pagination.value.total_page) {
-    fetchArticles(page, searchQuery.value)
-    // Scroll to top when changing page
+  if (page >= 1 && page <= pagination.value.total_page && page !== pagination.value.current_page) {
+    fetchArticles(page)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 }
 
-// Get page numbers for pagination (mobile optimized)
+// Get page numbers for pagination
 const getPageNumbers = () => {
   const pages = []
   const current = pagination.value.current_page
   const total = pagination.value.total_page
-
-  // Show fewer pages on mobile (3 instead of 5)
-  const isMobile = window.innerWidth < 640
+  const isMobile = typeof window !== 'undefined' ? window.innerWidth < 640 : false
   const maxPages = isMobile ? 3 : 5
 
   let start = Math.max(1, current - Math.floor(maxPages / 2))
@@ -607,9 +864,10 @@ const getPageNumbers = () => {
 // Format date
 const formatDate = (dateString) => {
   if (!dateString) return 'Unknown date'
-
   try {
     const date = new Date(dateString)
+    if (isNaN(date.getTime())) return 'Invalid date'
+
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -620,12 +878,21 @@ const formatDate = (dateString) => {
   }
 }
 
-// Initialize
+// Initialize component
 onMounted(() => {
+  // Load all articles by default (selectedCategory is null)
   fetchArticles()
+  document.addEventListener('click', closeMenus)
+})
+
+// Cleanup
+onUnmounted(() => {
+  document.removeEventListener('click', closeMenus)
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
 })
 </script>
-
 <style scoped>
 .line-clamp-2 {
   display: -webkit-box;
@@ -641,7 +908,6 @@ onMounted(() => {
   overflow: hidden;
 }
 
-/* Mobile-optimized prose styling */
 .mobile-prose {
   max-width: none;
   line-height: 1.7;
@@ -787,7 +1053,6 @@ onMounted(() => {
     min-width: 44px;
   }
 
-  /* Improve tap targets */
   nav a,
   .cursor-pointer {
     padding: 0.75rem;
