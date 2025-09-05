@@ -1,4 +1,3 @@
-```vue
 <template>
   <div class="p-6 bg-gray-50 min-h-screen">
     <div class="mb-6">
@@ -35,10 +34,12 @@
         </button>
       </div>
     </div>
+
     <div v-if="loading" class="flex justify-center items-center py-8">
       <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       <span class="ml-2 text-gray-600">Memuat data...</span>
     </div>
+
     <div
       v-else-if="error"
       class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"
@@ -46,6 +47,7 @@
       <p>{{ error }}</p>
       <button @click="fetchArticles" class="mt-2 text-sm underline">Coba lagi</button>
     </div>
+
     <div v-else class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -137,12 +139,14 @@
                   </div>
                 </div>
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ article.name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                 {{ article.category }}
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
                   :class="{
@@ -155,12 +159,15 @@
                   {{ article.status }}
                 </span>
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatNumber(article.views_count) }}
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                 {{ formatDate(article.created_at) }}
               </td>
+
               <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                 <div class="flex items-center justify-end space-x-2">
                   <button
@@ -203,12 +210,23 @@
                     title="Hapus"
                   >
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m4-12v12m-7-4h8"
-                      ></path>
+                      @click="confirmDelete(article)" :disabled="deletingIds.includes(article.id)"
+                      class="text-red-600 hover:text-red-900 p-1 rounded-md hover:bg-red-50
+                      disabled:opacity-50" title="Hapus" >
+                      <svg
+                        v-if="!deletingIds.includes(article.id)"
+                        class="h-4 w-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5-4h4m-4 4v12m4-12v12m-7-4h8"
+                        ></path>
+                      </svg>
                     </svg>
                   </button>
                 </div>
@@ -217,6 +235,7 @@
           </tbody>
         </table>
       </div>
+
       <div v-if="!loading && articles.length === 0" class="text-center py-8">
         <svg
           class="mx-auto h-12 w-12 text-gray-400"
@@ -409,6 +428,7 @@
                 <option value="Kegiatan Rutin">Kegiatan Rutin</option>
               </select>
             </div>
+            ======= >>>>>>> 4acd12044e27959f8bb5f375ec826a67da41225f
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
                 Status <span class="text-red-500">*</span>
@@ -535,6 +555,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import Swal from 'sweetalert2'
 
 const articles = ref([])
 const loading = ref(false)
@@ -560,6 +581,11 @@ const editForm = reactive({
 })
 const newTag = ref('')
 const imageError = ref(false)
+// Delete state
+const deletingIds = ref([])
+
+// Message state
+
 const message = reactive({
   text: '',
   type: 'success',
@@ -790,6 +816,24 @@ const updateArticle = async () => {
   }
 }
 
+// Confirm deletion
+const confirmDelete = async (article) => {
+  const result = await Swal.fire({
+    title: 'Konfirmasi Hapus',
+    text: `Apakah Anda yakin ingin menghapus artikel "${article.title}"?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Ya, Hapus!',
+    cancelButtonText: 'Batal',
+  })
+
+  if (result.isConfirmed) {
+    deleteArticle(article.slug, article.id)
+  }
+}
+
 const showMessage = (text, type = 'success') => {
   message.text = text
   message.type = type
@@ -824,4 +868,3 @@ onMounted(() => {
   fetchArticles()
 })
 </script>
-```

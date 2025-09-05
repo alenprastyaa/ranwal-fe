@@ -2,7 +2,7 @@
   <div class="p-6">
     <div class="bg-white shadow rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Tambah Program</h2>
-      <form @submit.prevent="createProgram" class="flex space-x-3">
+      <form @submit.prevent="createProgram" class="flex flex-col space-y-3">
         <input
           v-model="programName"
           type="text"
@@ -10,6 +10,15 @@
           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
+        <div class="flex items-center space-x-2">
+          <input
+            id="is_taxed_create"
+            v-model="isTaxed"
+            type="checkbox"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+          />
+          <label for="is_taxed_create" class="text-sm font-medium text-gray-700">Program ini menggunakan pajak</label>
+        </div>
         <button
           type="submit"
           :disabled="isCreating"
@@ -34,8 +43,20 @@
         >
           <div class="flex-1">
             <span class="text-gray-800 font-medium">{{ program.name }}</span>
+            <span v-if="program.is_taxed" class="ml-2 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                Pajak
+            </span>
+            <span v-else class="ml-2 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                Non-Pajak
+            </span>
           </div>
           <div class="flex items-center space-x-2">
+            <button
+                @click="startEdit(program)"
+                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+            >
+                Edit
+            </button>
             <button
               @click="confirmDelete(program)"
               :disabled="deletingIds.includes(program.id)"
@@ -46,6 +67,44 @@
           </div>
         </li>
       </ul>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
+        <h2 class="text-xl font-semibold mb-4">Edit Program</h2>
+        <form @submit.prevent="updateProgram" class="flex flex-col space-y-3">
+          <input
+            v-model="editedName"
+            type="text"
+            class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex items-center space-x-2">
+            <input
+              id="is_taxed_edit"
+              v-model="editedIsTaxed"
+              type="checkbox"
+              class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <label for="is_taxed_edit" class="text-sm font-medium text-gray-700">Program ini menggunakan pajak</label>
+          </div>
+          <div class="flex space-x-2 justify-end">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   </div>
 </template>
@@ -61,6 +120,13 @@ const programs = ref([])
 const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
+const isTaxed = ref(false)
+
+// Variabel untuk fitur edit
+const showEditModal = ref(false)
+const editProgram = ref(null)
+const editedName = ref('')
+const editedIsTaxed = ref(false)
 
 const fetchPrograms = async () => {
   loading.value = true
@@ -91,6 +157,7 @@ const createProgram = async () => {
       'https://bitwisi.cloud/ranwal/api/program/create',
       {
         name: programName.value,
+        is_taxed: isTaxed.value,
       },
       {
         headers: {
@@ -106,7 +173,8 @@ const createProgram = async () => {
       timer: 1500,
     })
     programName.value = ''
-    fetchPrograms() // refresh list
+    isTaxed.value = false
+    fetchPrograms()
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -116,6 +184,55 @@ const createProgram = async () => {
   } finally {
     isCreating.value = false
   }
+}
+
+const startEdit = (program) => {
+    editProgram.value = program
+    editedName.value = program.name
+    editedIsTaxed.value = program.is_taxed
+    showEditModal.value = true
+}
+
+const updateProgram = async () => {
+    if (!editProgram.value || !editedName.value) return
+
+    try {
+        await axios.put(
+            `https://bitwisi.cloud/ranwal/api/program/${editProgram.value.id}/update`,
+            {
+                name: editedName.value,
+                is_taxed: editedIsTaxed.value
+            },
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            }
+        )
+        Swal.fire({
+            icon: 'success',
+            title: 'Diperbarui!',
+            text: 'Program berhasil diperbarui.',
+            showConfirmButton: false,
+            timer: 1500,
+        })
+        cancelEdit()
+        fetchPrograms()
+    } catch (err) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Gagal',
+            text: 'Gagal memperbarui program.',
+        })
+        console.error('Update program error:', err)
+    }
+}
+
+const cancelEdit = () => {
+    showEditModal.value = false
+    editProgram.value = null
+    editedName.value = ''
+    editedIsTaxed.value = false
 }
 
 const confirmDelete = async (program) => {
@@ -154,7 +271,6 @@ const deleteProgram = async (program) => {
       timer: 1500,
     })
 
-    // Remove from local list for better UX
     programs.value = programs.value.filter((p) => p.id !== programId)
   } catch (err) {
     Swal.fire({

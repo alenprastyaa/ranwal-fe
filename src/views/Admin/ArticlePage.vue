@@ -488,6 +488,10 @@
 
 <script setup>
 import { ref, defineEmits, defineProps } from 'vue'
+import { useRouter } from 'vue-router' // Import useRouter
+
+// Inisialisasi router
+const router = useRouter()
 
 // Props
 const props = defineProps({
@@ -710,7 +714,7 @@ const handleSubmit = async () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`, // tambahkan token
+        Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(formData.value),
     })
@@ -719,11 +723,12 @@ const handleSubmit = async () => {
 
     if (data.status === 200 || data.status === 201) {
       submitMessage.value = `Artikel berhasil ${formData.value.status === 'published' ? 'dipublikasikan' : 'disimpan'}!`
-
-      // Kirim event sukses dan alihkan setelah penundaan
+      
+      // Arahkan ke halaman admin-list-artikel
       setTimeout(() => {
-        emit('success', data.data)
+        router.push({ name: 'admin-list artikel' })
       }, 1500)
+      
     } else {
       submitMessage.value = `Error: ${data.message || 'Gagal menyimpan artikel'}`
     }

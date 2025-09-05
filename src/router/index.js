@@ -15,6 +15,8 @@ import ArticlePage from '@/views/Admin/ArticlePage.vue'
 import ListArtikel from '@/views/Admin/ListArtikel.vue'
 import UserManagement from '@/views/Admin/UserManagement.vue'
 
+import axios from 'axios'; // Import Axios
+
 const routes = [
   {
     path: '/',
@@ -126,6 +128,32 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 })
+
+// === INTERCEPTOR AXIOS UNTUK PENANGANAN TOKEN TIDAK VALID ===
+axios.interceptors.response.use(
+  (response) => {
+    // Jika respons berhasil, lanjutkan
+    return response;
+  },
+  (error) => {
+    // Periksa jika error adalah respons dari server
+    if (error.response) {
+      const { status, data } = error.response;
+      // Cek jika status 401 dan pesan "Token Invalid"
+      if (status === 401 && data.message === "Token Invalid") {
+        // Hapus token dan peran pengguna dari localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('userRole');
+        
+        // Redirect pengguna ke halaman login
+        router.push('/login');
+      }
+    }
+    // Lanjutkan error agar dapat ditangkap di komponen
+    return Promise.reject(error);
+  }
+);
+// === AKHIR INTERCEPTOR AXIOS ===
 
 // Navigation Guard
 router.beforeEach((to, from, next) => {

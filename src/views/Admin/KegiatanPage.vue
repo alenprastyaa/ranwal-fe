@@ -73,13 +73,21 @@
                 Program: {{ getProgramName(action.program_id) }}
               </div>
             </div>
-            <button
-              @click="confirmDelete(action)"
-              :disabled="deletingIds.includes(action.id)"
-              class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
-            >
-              {{ deletingIds.includes(action.id) ? 'Menghapus...' : 'Hapus' }}
-            </button>
+            <div class="flex space-x-2">
+              <button
+                @click="startEdit(action)"
+                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDelete(action)"
+                :disabled="deletingIds.includes(action.id)"
+                class="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 disabled:opacity-50"
+              >
+                {{ deletingIds.includes(action.id) ? 'Menghapus...' : 'Hapus' }}
+              </button>
+            </div>
           </li>
         </ul>
 
@@ -102,6 +110,46 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
+        <h2 class="text-xl font-semibold mb-4">Edit Kegiatan</h2>
+        <form @submit.prevent="updateAction" class="space-y-4">
+          <select
+            v-model="editedProgramId"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Pilih Program</option>
+            <option v-for="program in programs" :key="program.id" :value="program.id">
+              {{ program.name }}
+            </option>
+          </select>
+          <input
+            v-model="editedName"
+            type="text"
+            placeholder="Nama kegiatan"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex justify-end space-x-2">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -132,6 +180,12 @@ const limit = 5
 const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
+
+// Edit modal states
+const showEditModal = ref(false)
+const editAction = ref(null)
+const editedName = ref('')
+const editedProgramId = ref('')
 
 let searchTimeout = null
 
@@ -168,7 +222,7 @@ const fetchActions = async () => {
     })
 
     actions.value = res.data.data || []
-    totalPages.value = Math.ceil((res.data.total || 0) / limit)
+    totalPages.value = res.data.filter ? res.data.filter.total_page : 1;
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -217,6 +271,57 @@ const createAction = async () => {
   } finally {
     isCreating.value = false
   }
+}
+
+// Start edit process
+const startEdit = (action) => {
+  editAction.value = action
+  editedName.value = action.name
+  editedProgramId.value = action.program_id
+  showEditModal.value = true
+}
+
+// Update action
+const updateAction = async () => {
+  if (!editAction.value || !editedName.value || !editedProgramId.value) return
+
+  try {
+    await axios.put(
+      `${baseUrl}/api/action/${editAction.value.id}/update`,
+      {
+        name: editedName.value,
+        program_id: editedProgramId.value,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      }
+    )
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Kegiatan berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    cancelEdit()
+    fetchActions()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui kegiatan.',
+    })
+  }
+}
+
+// Cancel edit
+const cancelEdit = () => {
+  showEditModal.value = false
+  editAction.value = null
+  editedName.value = ''
+  editedProgramId.value = ''
 }
 
 // Delete action with confirmation

@@ -99,13 +99,21 @@
                 Subtitle: {{ getSubtitleName(account.subtitle_id) }}
               </div>
             </div>
-            <button
-              @click="confirmDelete(account)"
-              :disabled="deletingIds.includes(account.id)"
-              class="bg-red-600 text-white px-3 py-1 rounded-full text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
-            >
-              {{ deletingIds.includes(account.id) ? 'Menghapus...' : 'Hapus' }}
-            </button>
+            <div class="flex space-x-2">
+              <button
+                @click="startEdit(account)"
+                class="bg-blue-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-700 transition duration-200"
+              >
+                Edit
+              </button>
+              <button
+                @click="confirmDelete(account)"
+                :disabled="deletingIds.includes(account.id)"
+                class="bg-red-600 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-700 disabled:opacity-50 transition duration-200"
+              >
+                {{ deletingIds.includes(account.id) ? 'Menghapus...' : 'Hapus' }}
+              </button>
+            </div>
           </li>
         </ul>
 
@@ -128,6 +136,53 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
+      <div class="bg-white rounded-lg p-6 w-full max-w-md shadow-xl transform transition-all">
+        <h2 class="text-xl font-semibold mb-4 text-gray-800">Edit Kode Rekening</h2>
+        <form @submit.prevent="updateAccount" class="space-y-4">
+          <select
+            v-model="editedSubtitleId"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          >
+            <option value="">Pilih Subtitle</option>
+            <option v-for="subtitle in subtitles" :key="subtitle.id" :value="subtitle.id">
+              {{ subtitle.name }}
+            </option>
+          </select>
+          <input
+            v-model="editedCode"
+            type="text"
+            placeholder="Kode rekening"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <input
+            v-model="editedName"
+            type="text"
+            placeholder="Nama kode rekening"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
+          />
+          <div class="flex justify-end space-x-2 mt-4">
+            <button
+              type="button"
+              @click="cancelEdit"
+              class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition duration-200"
+            >
+              Batal
+            </button>
+            <button
+              type="submit"
+              class="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition duration-200"
+            >
+              Perbarui
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </div>
@@ -159,6 +214,13 @@ const limit = 5
 const loading = ref(false)
 const isCreating = ref(false)
 const deletingIds = ref([])
+
+// Edit modal states
+const showEditModal = ref(false)
+const editAccount = ref(null)
+const editedCode = ref('')
+const editedName = ref('')
+const editedSubtitleId = ref('')
 
 let searchTimeout = null
 
@@ -194,7 +256,7 @@ const fetchAccounts = async () => {
       params,
     })
     accounts.value = res.data.data || []
-    totalPages.value = Math.ceil((res.data.total || 0) / limit)
+    totalPages.value = res.data.filter ? res.data.filter.total_page : 1;
   } catch (err) {
     Swal.fire({
       icon: 'error',
@@ -249,6 +311,66 @@ const createAccount = async () => {
   } finally {
     isCreating.value = false
   }
+}
+
+// Start edit process
+const startEdit = (account) => {
+  editAccount.value = account
+  editedCode.value = account.code
+  editedName.value = account.name
+  editedSubtitleId.value = account.subtitle_id
+  showEditModal.value = true
+}
+
+// Update account
+const updateAccount = async () => {
+  if (!editAccount.value || !editedCode.value || !editedName.value || !editedSubtitleId.value) {
+    return Swal.fire({
+      icon: 'warning',
+      title: 'Input Tidak Lengkap',
+      text: 'Harap lengkapi semua bidang.',
+    })
+  }
+
+  try {
+    await axios.put(
+      `${baseUrl}/api/account/${editAccount.value.id}/update`,
+      {
+        code: editedCode.value,
+        name: editedName.value,
+        subtitle_id: editedSubtitleId.value,
+      },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+      },
+    )
+
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Kode rekening berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+
+    cancelEdit()
+    fetchAccounts()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui kode rekening.',
+    })
+  }
+}
+
+// Cancel edit
+const cancelEdit = () => {
+  showEditModal.value = false
+  editAccount.value = null
+  editedCode.value = ''
+  editedName.value = ''
+  editedSubtitleId.value = ''
 }
 
 // Delete account with confirmation
