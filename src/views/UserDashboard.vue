@@ -185,6 +185,25 @@
             </p>
           </div>
 
+          <!-- Tax Checkbox Section -->
+          <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div class="flex items-center space-x-3">
+              <input
+                id="useTax"
+                v-model="selectedData.useTax"
+                @change="handleTaxChange"
+                type="checkbox"
+                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              />
+              <label for="useTax" class="text-sm font-medium text-gray-700">
+                Menggunakan Pajak (PPN 12%)
+              </label>
+            </div>
+            <p class="text-xs text-gray-500 mt-2">
+              Centang jika ingin menambahkan PPN 12% pada perhitungan total harga
+            </p>
+          </div>
+
           <div>
             <h2 class="text-lg font-medium text-gray-900 mb-3">Buat Laporan Detail Program</h2>
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
@@ -233,6 +252,14 @@
                   <span class="font-medium text-gray-900">{{
                     selectedData.supporter?.name || 'Belum dipilih'
                   }}</span>
+                </div>
+                <div class="bg-white rounded-lg p-2">
+                  <span class="text-blue-700 font-medium">Menggunakan Pajak: </span>
+                  <span
+                    class="font-medium"
+                    :class="selectedData.useTax ? 'text-green-600' : 'text-red-600'"
+                    >{{ selectedData.useTax ? 'Ya (PPN 12%)' : 'Tidak' }}</span
+                  >
                 </div>
               </div>
             </div>
@@ -345,12 +372,18 @@
                   <input
                     v-model.number="reportForm.tax"
                     type="number"
-                    disabled
+                    :disabled="!selectedData.useTax"
                     placeholder="0"
-                    class="w-full border border-gray-300 rounded-lg px-3 py-2 bg-gray-100 text-gray-500 cursor-not-allowed"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    :class="
+                      !selectedData.useTax ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : ''
+                    "
                     @input="calculateAfterTax"
                   />
                   <p class="text-xs text-gray-500 mt-1">{{ formatRupiah(reportForm.tax) }}</p>
+                  <p v-if="selectedData.useTax" class="text-xs text-blue-600 mt-1">
+                    PPN 12% otomatis dihitung
+                  </p>
                 </div>
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-1"
@@ -443,7 +476,7 @@ const selectedData = reactive({
   subtitle: null,
   account: null,
   supporter: null,
-  is_taxed: false, // Tambahkan properti is_taxed
+  useTax: false, // Changed from is_taxed to useTax for user control
 })
 
 const reportForm = reactive({
@@ -617,30 +650,22 @@ const fetchReports = async () => {
 
 const selectProgram = () => {
   if (selectedData.program) {
-    selectedData.is_taxed = selectedData.program.is_taxed
-    
     // Reset selections for the next levels
     selectedData.action = null
     selectedData.subAction = null
     selectedData.activity = null
     selectedData.subtitle = null
     selectedData.account = null
-    
+
     // Clear next level data
     actions.value = []
     subActions.value = []
     activities.value = []
     subtitles.value = []
     accounts.value = []
-    
-    // Recalculate tax
-    calculateTotal()
-    
+
     fetchActions()
     showSuccess(`Program "${selectedData.program.name}" berhasil dipilih`)
-  } else {
-    selectedData.is_taxed = false
-    calculateTotal()
   }
 }
 
@@ -706,6 +731,16 @@ const selectSupporter = () => {
   }
 }
 
+// New function to handle tax checkbox change
+const handleTaxChange = () => {
+  calculateTotal() // Recalculate when tax option changes
+  if (selectedData.useTax) {
+    showSuccess('PPN 12% akan diterapkan pada perhitungan')
+  } else {
+    showSuccess('PPN tidak akan diterapkan pada perhitungan')
+  }
+}
+
 const createReport = async () => {
   loading.report = true
   try {
@@ -732,16 +767,16 @@ const createReport = async () => {
 }
 
 const calculateTotal = () => {
-  const volumes = reportForm.first_volume * reportForm.second_volume * reportForm.third_volume;
-  reportForm.total_price = reportForm.price * volumes;
+  const volumes = reportForm.first_volume * reportForm.second_volume * reportForm.third_volume
+  reportForm.total_price = reportForm.price * volumes
 
-  // Auto-calculate tax if the selected program is taxed
-  if (selectedData.is_taxed) {
-    reportForm.tax = Math.round(reportForm.total_price * 0.12);
+  // Calculate tax based on user selection (useTax checkbox)
+  if (selectedData.useTax) {
+    reportForm.tax = Math.round(reportForm.total_price * 0.12)
   } else {
-    reportForm.tax = 0;
+    reportForm.tax = 0
   }
-  calculateAfterTax();
+  calculateAfterTax()
 }
 
 const calculateAfterTax = () => {

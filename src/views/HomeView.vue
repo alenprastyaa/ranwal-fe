@@ -15,7 +15,6 @@
           <nav class="hidden md:flex items-center space-x-4">
             <router-link
               to="/login"
-              href="#"
               class="bg-blue-900 px-3 py-2 text-white text-base rounded-lg hover:bg-blue-700 transition-colors duration-200 font-medium"
               >Sign In</router-link
             >
@@ -887,6 +886,7 @@ onMounted(() => {
 
 // Cleanup
 onUnmounted(() => {
+  localStorage.removeItem('userToken')
   document.removeEventListener('click', closeMenus)
   if (searchTimeout) {
     clearTimeout(searchTimeout)

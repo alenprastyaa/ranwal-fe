@@ -15,18 +15,20 @@ import ArticlePage from '@/views/Admin/ArticlePage.vue'
 import ListArtikel from '@/views/Admin/ListArtikel.vue'
 import UserManagement from '@/views/Admin/UserManagement.vue'
 
-import axios from 'axios'; // Import Axios
+import axios from 'axios'
 
 const routes = [
   {
     path: '/',
     name: 'Home',
     component: HomeView,
+    meta: { requiresAuth: false, isPublic: true },
   },
   {
     path: '/login',
     name: 'Login',
     component: Login,
+    meta: { requiresAuth: false, isPublic: true },
   },
   {
     path: '/admin-dashboard',
@@ -110,9 +112,11 @@ const routes = [
     path: '/dashboard',
     redirect: (to) => {
       const userRole = localStorage.getItem('userRole')
-      if (userRole === 'admin') {
+      const token = localStorage.getItem('token')
+
+      if (token && userRole === 'admin') {
         return '/admin-dashboard'
-      } else if (userRole === 'user') {
+      } else if (token && userRole === 'user') {
         return '/user-dashboard'
       }
       return '/login'
@@ -129,68 +133,50 @@ const router = createRouter({
   routes,
 })
 
-// === INTERCEPTOR AXIOS UNTUK PENANGANAN TOKEN TIDAK VALID ===
 axios.interceptors.response.use(
   (response) => {
-    // Jika respons berhasil, lanjutkan
-    return response;
+    return response
   },
   (error) => {
-    // Periksa jika error adalah respons dari server
     if (error.response) {
-      const { status, data } = error.response;
-      // Cek jika status 401 dan pesan "Token Invalid"
-      if (status === 401 && data.message === "Token Invalid") {
-        // Hapus token dan peran pengguna dari localStorage
-        localStorage.removeItem('token');
-        localStorage.removeItem('userRole');
-        
-        // Redirect pengguna ke halaman login
-        router.push('/login');
+      const { status, data } = error.response
+      if (status === 401 && data.message === 'Token Invalid') {
+        localStorage.removeItem('token')
+        localStorage.removeItem('userRole')
+        router.push('/login')
       }
     }
-    // Lanjutkan error agar dapat ditangkap di komponen
-    return Promise.reject(error);
-  }
-);
-// === AKHIR INTERCEPTOR AXIOS ===
+    return Promise.reject(error)
+  },
+)
 
-// Navigation Guard
 router.beforeEach((to, from, next) => {
   const token = localStorage.getItem('token')
   const userRole = localStorage.getItem('userRole')
 
-  // If the route requires authentication and no token is present
-  if (to.meta.requiresAuth && !token) {
-    localStorage.removeItem('token')
-    localStorage.removeItem('userRole')
-    return next('/login')
+  if (to.meta.isPublic) {
+    if (token && to.path === '/login') {
+      const dashboardPath = userRole === 'admin' ? '/admin-dashboard' : '/user-dashboard'
+      return next(dashboardPath)
+    }
+    return next()
   }
 
-  // If already logged in and trying to access login page
-  if (token && to.path === '/login') {
-    const dashboardPath = userRole === 'admin' ? '/admin-dashboard' : '/user-dashboard'
-    return next(dashboardPath)
-  }
-
-  // Role-based access control
-  if (to.meta.requiresAuth && to.meta.role && to.meta.role !== userRole) {
-    // If the role doesn't match, redirect to the appropriate dashboard or login
-    if (!userRole) {
+  if (to.meta.requiresAuth) {
+    if (!token) {
       localStorage.removeItem('token')
       localStorage.removeItem('userRole')
       return next('/login')
     }
-    const correctDashboard = userRole === 'admin' ? '/admin-dashboard' : '/user-dashboard'
-    return next(correctDashboard)
+
+    if (to.meta.role && to.meta.role !== userRole) {
+      const correctDashboard = userRole === 'admin' ? '/admin-dashboard' : '/user-dashboard'
+      return next(correctDashboard)
+    }
+
+    return next()
   }
 
-  // Prevent access to admin routes for non-admin users
-  if (token && to.path.startsWith('/admin-') && userRole !== 'admin') {
-    return next('/user-dashboard')
-  }
-
-  // Proceed with navigation
   next()
 })
 

@@ -10,7 +10,7 @@
           class="flex-1 border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
-        <div class="flex items-center space-x-2">
+        <!-- <div class="flex items-center space-x-2">
           <input
             id="is_taxed_create"
             v-model="isTaxed"
@@ -18,7 +18,7 @@
             class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
           <label for="is_taxed_create" class="text-sm font-medium text-gray-700">Program ini menggunakan pajak</label>
-        </div>
+        </div> -->
         <button
           type="submit"
           :disabled="isCreating"
@@ -43,19 +43,25 @@
         >
           <div class="flex-1">
             <span class="text-gray-800 font-medium">{{ program.name }}</span>
-            <span v-if="program.is_taxed" class="ml-2 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
-                Pajak
+            <!-- <span
+              v-if="program.is_taxed"
+              class="ml-2 inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800"
+            >
+              Pajak
             </span>
-            <span v-else class="ml-2 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                Non-Pajak
-            </span>
+            <span
+              v-else
+              class="ml-2 inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800"
+            >
+              Non-Pajak
+            </span> -->
           </div>
           <div class="flex items-center space-x-2">
             <button
-                @click="startEdit(program)"
-                class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
+              @click="startEdit(program)"
+              class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition"
             >
-                Edit
+              Edit
             </button>
             <button
               @click="confirmDelete(program)"
@@ -69,7 +75,10 @@
       </ul>
     </div>
 
-    <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div
+      v-if="showEditModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+    >
       <div class="bg-white rounded-lg p-6 w-11/12 max-w-md">
         <h2 class="text-xl font-semibold mb-4">Edit Program</h2>
         <form @submit.prevent="updateProgram" class="flex flex-col space-y-3">
@@ -86,7 +95,9 @@
               type="checkbox"
               class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
             />
-            <label for="is_taxed_edit" class="text-sm font-medium text-gray-700">Program ini menggunakan pajak</label>
+            <label for="is_taxed_edit" class="text-sm font-medium text-gray-700"
+              >Program ini menggunakan pajak</label
+            >
           </div>
           <div class="flex space-x-2 justify-end">
             <button
@@ -187,52 +198,52 @@ const createProgram = async () => {
 }
 
 const startEdit = (program) => {
-    editProgram.value = program
-    editedName.value = program.name
-    editedIsTaxed.value = program.is_taxed
-    showEditModal.value = true
+  editProgram.value = program
+  editedName.value = program.name
+  editedIsTaxed.value = program.is_taxed
+  showEditModal.value = true
 }
 
 const updateProgram = async () => {
-    if (!editProgram.value || !editedName.value) return
+  if (!editProgram.value || !editedName.value) return
 
-    try {
-        await axios.put(
-            `https://bitwisi.cloud/ranwal/api/program/${editProgram.value.id}/update`,
-            {
-                name: editedName.value,
-                is_taxed: editedIsTaxed.value
-            },
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            }
-        )
-        Swal.fire({
-            icon: 'success',
-            title: 'Diperbarui!',
-            text: 'Program berhasil diperbarui.',
-            showConfirmButton: false,
-            timer: 1500,
-        })
-        cancelEdit()
-        fetchPrograms()
-    } catch (err) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Gagal',
-            text: 'Gagal memperbarui program.',
-        })
-        console.error('Update program error:', err)
-    }
+  try {
+    await axios.put(
+      `https://bitwisi.cloud/ranwal/api/program/${editProgram.value.id}/update`,
+      {
+        name: editedName.value,
+        is_taxed: editedIsTaxed.value,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    )
+    Swal.fire({
+      icon: 'success',
+      title: 'Diperbarui!',
+      text: 'Program berhasil diperbarui.',
+      showConfirmButton: false,
+      timer: 1500,
+    })
+    cancelEdit()
+    fetchPrograms()
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal',
+      text: 'Gagal memperbarui program.',
+    })
+    console.error('Update program error:', err)
+  }
 }
 
 const cancelEdit = () => {
-    showEditModal.value = false
-    editProgram.value = null
-    editedName.value = ''
-    editedIsTaxed.value = false
+  showEditModal.value = false
+  editProgram.value = null
+  editedName.value = ''
+  editedIsTaxed.value = false
 }
 
 const confirmDelete = async (program) => {
