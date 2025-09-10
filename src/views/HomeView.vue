@@ -39,7 +39,7 @@
                     clip-rule="evenodd"
                   />
                 </svg>
-                {{ selectedCategory || 'Katogori' }}
+                {{ selectedCategory || 'Kategori' }}
               </button>
 
               <div
@@ -59,7 +59,7 @@
                   "
                   role="menuitem"
                 >
-                  Semua Katogori
+                  Semua Kategori
                 </a>
                 <a
                   v-for="category in categories"
@@ -341,7 +341,7 @@
                 aria-haspopup="true"
                 @click="toggleCategoryMenu"
               >
-                {{ selectedCategory || 'Katogori' }}
+                {{ selectedCategory || 'Kategori' }}
                 <svg
                   class="-mr-1 ml-2 h-5 w-5"
                   xmlns="http://www.w3.org/2000/svg"
@@ -378,7 +378,7 @@
                   role="menuitem"
                   tabindex="-1"
                   id="menu-item-0"
-                  >Semua Katogori</a
+                  >Semua Kategori</a
                 >
                 <a
                   v-for="category in categories"
